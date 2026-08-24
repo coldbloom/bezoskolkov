@@ -1,0 +1,25 @@
+.root {
+&:global(.shock-flow) { position: relative; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 76px; }
+:global(.shock-line) { position: absolute; z-index: 0; top: 62px; left: 3%; width: 94%; height: 1px; overflow: hidden; background: rgba(255, 255, 255, 0.16); }
+:global(.shock-line span) { display: block; width: 18%; height: 100%; background: linear-gradient(90deg, transparent, var(--signal), transparent); animation: scan 4.5s linear infinite; }
+:global(.shock-card) { position: relative; z-index: 1; animation: cardGlow 5s calc(var(--stage) * 0.35s) infinite; }
+:global(.shock-image) { position: relative; width: 100%; aspect-ratio: 552 / 286; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.12); background: #252723; }
+:global(.shock-image img) { object-fit: contain; filter: saturate(0.7) contrast(1.05); transition: filter 0.3s; }
+:global(.shock-card:hover .shock-image img) { filter: saturate(1.1); }
+:global(.shock-image > span) { position: absolute; top: 12px; left: 12px; display: grid; width: 30px; height: 30px; place-items: center; background: var(--signal); color: var(--ink); border-radius: 50%; font-size: 10px; font-weight: 800; }
+:global(.shock-card h3) { margin: 20px 0 8px; font-size: 17px; }
+:global(.shock-card p) { margin: 0; color: #83887f; font-size: 12px; line-height: 1.5; }
+
+@keyframes scan { from { transform: translateX(-100%); } to { transform: translateX(550%); } }
+@keyframes cardGlow { 0%, 25%, 100% { opacity: 0.76; } 12% { opacity: 1; } }
+
+@media (max-width: 1100px) {
+  :global(.shock-line) { top: 52px; }
+}
+
+@media (max-width: 900px) {
+  &:global(.shock-flow) { grid-template-columns: repeat(5, calc(100vw - 54px)); margin-right: -20px; padding: 0 20px 18px 0; overflow-x: auto; scroll-padding-inline: 0; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+  :global(.shock-card) { scroll-snap-align: start; }
+  :global(.shock-line) { display: none; }
+}
+}

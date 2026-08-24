@@ -1,0 +1,32 @@
+.root {
+&:global(.site-footer) { padding: 74px 0 24px; background: #0d0f0c; color: #fff; }
+:global(.footer-grid) { display: grid; grid-template-columns: 1.5fr 0.6fr 0.8fr 1.1fr; gap: 65px; }
+:global(.footer-grid > div:not(.footer-brand)) { display: flex; flex-direction: column; align-items: flex-start; gap: 11px; }
+:global(.footer-brand) { display: flex; align-items: flex-start; gap: 15px; }
+:global(.footer-brand .brand-mark) { display: grid; width: 42px; height: 42px; place-items: center; background: var(--signal); color: var(--ink); border-radius: 50%; }
+:global(.footer-brand .brand-mark svg) { width: 23px; }
+:global(.footer-brand strong) { font-size: 19px; letter-spacing: 0.13em; }
+:global(.footer-brand p) { max-width: 240px; color: #71766d; font-size: 12px; line-height: 1.55; }
+:global(.footer-title) { margin: 0 0 10px; color: #777c73; font-size: 9px; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; }
+:global(.footer-grid a:not(.footer-phone):not(.text-link)) { color: #adb1a9; font-size: 12px; }
+:global(.footer-grid a:hover) { color: var(--signal); }
+:global(.footer-phone) { font-size: 21px; font-weight: 700; }
+:global(.footer-contact > p:not(.footer-title)) { margin: 4px 0; color: #747970; font-size: 12px; line-height: 1.55; }
+:global(.footer-contact .text-link) { display: inline-flex; align-items: center; gap: 12px; padding-bottom: 6px; border-bottom: 1px solid currentColor; color: var(--signal); font-size: 11px; font-weight: 700; }
+:global(.footer-bottom) { display: flex; justify-content: space-between; margin-top: 60px; padding-top: 22px; border-top: 1px solid rgba(255, 255, 255, 0.08); color: #575c54; font-size: 9px; text-transform: uppercase; }
+:global(.codecake-wrapper) { width: 100%; padding-top: 48px; padding-bottom: 12px; display: flex; align-items: center; justify-content: center; }
+
+@media (max-width: 900px) {
+  :global(.footer-grid) { grid-template-columns: 1.2fr 0.8fr 0.8fr; }
+  :global(.footer-contact) { grid-column: 1 / 4; margin-top: 20px; }
+}
+
+@media (max-width: 620px) {
+  &:global(.site-footer) { padding-bottom: 86px; }
+  :global(.footer-grid) { grid-template-columns: 1fr 1fr; gap: 45px 25px; }
+  :global(.footer-brand) { grid-column: 1 / 3; }
+  :global(.footer-brand .brand-mark) { width: 38px; height: 38px; }
+  :global(.footer-contact) { grid-column: 1 / 3; }
+  :global(.footer-bottom) { align-items: flex-start; flex-direction: column; gap: 12px; }
+}
+}

@@ -1,0 +1,77 @@
+.modalPage.modalPage {
+  width: min(88vw, 460px);
+  height: calc(100% - var(--site-header-height));
+  overflow: hidden;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 7px 0 0 0;
+  background: var(--paper);
+  box-shadow: -34px 0 90px rgba(0, 0, 0, 0.28);
+}
+
+.backdrop.backdrop {
+  top: var(--site-header-height) !important;
+  height: calc(100% - var(--site-header-height));
+  background: rgba(13, 15, 12, 0.72);
+  backdrop-filter: blur(3px);
+}
+
+.burgerBtn {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  margin-left: auto;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+  cursor: pointer;
+  line-height: 0;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+
+  svg {
+    width: 27px;
+    height: 27px;
+  }
+
+  &:hover {
+    border-color: var(--signal);
+    color: var(--signal);
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(242, 211, 12, 0.45);
+    outline-offset: 3px;
+  }
+
+  @media (min-width: 901px) {
+    display: none;
+  }
+}
+
+.burgerBtnOpen {
+  border-color: var(--signal);
+  background: var(--signal);
+  color: var(--ink);
+
+  &:hover {
+    color: var(--ink);
+  }
+}
+
+@media (max-width: 420px) {
+  .modalPage.modalPage {
+    width: calc(100vw - 60px);
+  }
+
+  .burgerBtn {
+    width: 40px;
+    height: 40px;
+  }
+}

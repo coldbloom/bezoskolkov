@@ -1,0 +1,231 @@
+@keyframes tab-press {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
+
+.modalWrapper {
+  position: relative;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  overflow: hidden;
+  border-top: 1px solid rgba(19, 21, 18, 0.16);
+  background:
+    linear-gradient(145deg, rgba(242, 211, 12, 0.08), transparent 34%),
+    var(--paper);
+  color: var(--ink);
+  isolation: isolate;
+
+  &::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    right: -190px;
+    bottom: -85px;
+    width: 330px;
+    height: 330px;
+    border: 1px solid rgba(242, 211, 12, 0.18);
+    border-radius: 50%;
+    box-shadow:
+      0 0 0 54px rgba(242, 211, 12, 0.025),
+      0 0 0 108px rgba(242, 211, 12, 0.018);
+  }
+}
+
+.tabsWrapper {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  gap: 9px;
+  overflow-y: auto;
+  padding: clamp(28px, 6vw, 42px) clamp(18px, 5vw, 30px) 34px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(19, 21, 18, 0.28) transparent;
+}
+
+.menuHeader {
+  margin-bottom: 13px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.menuEyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: #777c74;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+
+  &::before {
+    content: "";
+    width: 27px;
+    height: 2px;
+    background: var(--signal);
+  }
+}
+
+.menuTitle {
+  max-width: 360px;
+  margin: 14px 0 0;
+  color: var(--ink);
+  font-size: clamp(31px, 7vw, 40px);
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.tabLink,
+.servicesButton {
+  display: flex;
+  width: 100%;
+  min-height: 58px;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid rgba(19, 21, 18, 0.14);
+  border-radius: 6px;
+  padding: 0 18px;
+  background: rgba(255, 255, 255, 0.42);
+  color: var(--ink);
+  box-shadow: 0 8px 24px rgba(19, 21, 18, 0.035);
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: left;
+  text-decoration: none;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+
+  &:hover {
+    border-color: rgba(19, 21, 18, 0.34);
+    background: #fff;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    animation: tab-press 220ms ease-out;
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(242, 211, 12, 0.5);
+    outline-offset: 2px;
+  }
+}
+
+.servicesButton {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+
+  &:hover {
+    border-color: var(--ink-soft);
+    background: var(--ink-soft);
+  }
+}
+
+.chevron,
+.chevronOpen {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  color: var(--signal);
+  transition: transform 0.25s ease;
+}
+
+.chevronIcon {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.servicesList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 1px 0 3px 8px;
+  padding: 5px 0 5px 14px;
+  border-left: 2px solid var(--signal);
+}
+
+.subTabLink {
+  display: block;
+  width: 100%;
+  border: 1px solid rgba(19, 21, 18, 0.11);
+  border-radius: 4px;
+  padding: 12px 14px;
+  background: rgba(232, 231, 223, 0.74);
+  color: #53574f;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-decoration: none;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+
+  &:hover {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: #fff;
+    transform: translateX(3px);
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(242, 211, 12, 0.5);
+    outline-offset: 2px;
+  }
+}
+
+.ctaLink {
+  margin-top: 4px;
+  border-color: var(--signal);
+  background: var(--signal);
+  color: var(--ink);
+  box-shadow: 0 14px 30px rgba(63, 57, 5, 0.13);
+
+  &::after {
+    content: "↗";
+    font-size: 19px;
+    font-weight: 500;
+  }
+
+  &:hover {
+    border-color: var(--signal-light);
+    background: var(--signal-light);
+  }
+}
+
+@media (max-width: 420px) {
+  .tabsWrapper {
+    padding-inline: 16px;
+  }
+
+  .menuTitle {
+    font-size: 31px;
+  }
+
+  .tabLink,
+  .servicesButton {
+    min-height: 55px;
+    padding-inline: 16px;
+    font-size: 14px;
+  }
+}

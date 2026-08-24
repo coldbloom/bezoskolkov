@@ -1,0 +1,1 @@
+export { FragmentsIcon } from "./FragmentsIcon";

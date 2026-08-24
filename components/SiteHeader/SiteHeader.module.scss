@@ -1,0 +1,41 @@
+.root {
+&:global(.site-header) {
+  position: sticky;
+  z-index: 50;
+  top: 0;
+  background: rgba(15, 17, 14, 0.94);
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+}
+
+:global(.header-inner) { height: 82px; display: flex; align-items: center; }
+:global(.brand) { display: inline-flex; align-items: center; gap: 12px; flex-shrink: 0; }
+:global(.brand-mark) { display: grid; width: 42px; height: 42px; place-items: center; background: var(--signal); color: var(--ink); border-radius: 50%; }
+:global(.brand-mark svg) { width: 23px; }
+:global(.brand-copy) { display: flex; flex-direction: column; line-height: 1; }
+:global(.brand-copy strong) { font-size: 18px; letter-spacing: 0.13em; }
+:global(.brand-copy small) { margin-top: 6px; color: #9ea29a; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; }
+:global(.desktop-nav) { display: flex; align-items: center; gap: 28px; margin-left: auto; }
+:global(.desktop-nav a) { color: #c2c5bf; font-size: 12px; transition: color 0.2s; }
+:global(.desktop-nav a:hover) { color: var(--signal); }
+:global(.header-phone) { display: flex; align-items: center; gap: 10px; margin-left: 34px; padding-left: 28px; border-left: 1px solid rgba(255, 255, 255, 0.13); }
+:global(.header-phone > svg) { width: 20px; color: var(--signal); }
+:global(.header-phone span) { display: flex; flex-direction: column; font-size: 15px; font-weight: 700; letter-spacing: 0.02em; }
+:global(.header-phone small) { margin-bottom: 3px; color: #858981; font-size: 9px; font-weight: 400; text-transform: uppercase; }
+@media (max-width: 1100px) {
+  :global(.desktop-nav) { gap: 17px; }
+  :global(.desktop-nav a) { font-size: 11px; }
+  :global(.header-phone) { margin-left: 20px; padding-left: 18px; }
+}
+
+@media (max-width: 900px) {
+  :global(.desktop-nav), :global(.header-phone) { display: none; }
+}
+
+@media (max-width: 620px) {
+  :global(.header-inner) { height: 70px; }
+  :global(.brand-mark) { width: 38px; height: 38px; }
+  :global(.brand-copy strong) { font-size: 16px; }
+}
+}
