@@ -1,0 +1,45 @@
+.root {
+  position: relative;
+  z-index: 3;
+  margin-bottom: 28px;
+  color: #73776f;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: flex;
+    gap: 8px;
+  }
+
+  a {
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--ink);
+    }
+  }
+
+  [aria-current="page"] {
+    color: var(--ink);
+  }
+}
+
+.dark {
+  color: #777c73;
+
+  a:hover,
+  [aria-current="page"] {
+    color: #fff;
+  }
+}

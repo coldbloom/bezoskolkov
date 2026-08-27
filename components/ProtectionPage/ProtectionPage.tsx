@@ -2,8 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Region } from "@/lib/regions";
 import { regions } from "@/lib/regions";
-import { DEFAULT_PHONE, formatPhone, phoneHref } from "@/lib/site";
+import { DEFAULT_PHONE, SITE_NAME, SITE_URL, formatPhone, phoneHref } from "@/lib/site";
 import { ArrowIcon, CheckIcon, ClockIcon, FragmentsIcon, LayersIcon, PhoneIcon, ShieldIcon } from "@/components/icons";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { LeadForm } from "@/components/LeadForm";
 import { ShockwaveFlow } from "@/components/ShockwaveFlow";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -48,15 +49,26 @@ export function ProtectionPage({ region }: ProtectionPageProps) {
   const phone = region?.phone || process.env.DEFAULT_PHONE || DEFAULT_PHONE;
   const regionName = region?.name || "Юг России";
   const location = region ? region.locative : "на Юге России";
+  const canonicalPath = region ? `/regions/${region.slug}` : "/";
+  const serviceDescription = region?.description || "Профессиональный подбор и монтаж защитной противоосколочной плёнки для окон на Юге России.";
+  const heroMeta = region?.serviceArea || ["Для квартир", "Домов", "Офисов", "Витрин"];
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Service",
+        "@id": `${SITE_URL}${canonicalPath}#service`,
         name: `Защитная противоосколочная плёнка для окон ${location}`,
+        description: serviceDescription,
+        url: `${SITE_URL}${canonicalPath}`,
         serviceType: "Защита остекления противоосколочной плёнкой",
         areaServed: region?.serviceArea || regions.map((item) => item.name),
-        provider: { "@type": "Organization", name: "Контур Защиты", telephone: phone },
+        provider: {
+          "@type": "Organization",
+          "@id": `${SITE_URL}/#organization`,
+          name: SITE_NAME,
+          telephone: phone,
+        },
       },
       {
         "@type": "FAQPage",
@@ -76,21 +88,40 @@ export function ProtectionPage({ region }: ProtectionPageProps) {
       <main className={styles.root}>
         <section className="hero">
           <div className="hero-backdrop" aria-hidden="true" />
+          {region && (
+            <div className="shell">
+              <Breadcrumbs
+                items={[
+                  { label: "Главная", href: "/" },
+                  { label: region.shortName, href: `/regions/${region.slug}` },
+                ]}
+                variant="dark"
+              />
+            </div>
+          )}
           <div className="shell hero-grid">
             <div className="hero-copy">
               <div className="eyebrow"><span /> Защита остекления {location}</div>
               <h1>Защитная<br /><em>противоосколочная</em><br />плёнка для окон</h1>
-              <p className="hero-lead">Снижаем риск травмирования осколками стекла при взрывах, ударах и разрушении остекления.</p>
+              <p className="hero-lead">
+                {region?.description || "Снижаем риск травмирования осколками стекла при взрывах, ударах и разрушении остекления."}
+              </p>
               <div className="hero-actions">
                 <a className="button button-primary" href="#estimate">Рассчитать стоимость <ArrowIcon /></a>
                 <a className="phone-link" href={phoneHref(phone)}><PhoneIcon /><span><small>Консультация</small>{formatPhone(phone)}</span></a>
               </div>
               <div className="hero-meta">
-                <span>Для квартир</span><span>Домов</span><span>Офисов</span><span>Витрин</span>
+                {heroMeta.map((item) => <span key={item}>{item}</span>)}
               </div>
             </div>
             <div className="hero-visual">
-              <Image src="/title.png" alt="Профессиональная установка защитной плёнки и пример удержания разрушенного стекла" fill priority sizes="(max-width: 900px) 100vw, 52vw" />
+              <Image
+                src="/title.png"
+                alt="Профессиональная установка защитной плёнки и пример удержания разрушенного стекла"
+                fill
+                preload
+                sizes="(max-width: 900px) calc(100vw - 30px), (max-width: 1304px) 52vw, 645px"
+              />
             </div>
           </div>
           <a className="scroll-cue" href="#comparison"><span>↓</span> Узнать, как это работает</a>

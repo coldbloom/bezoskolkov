@@ -11,7 +11,7 @@ export function SiteFooter({ phone }: { phone: string }) {
       <div className="shell footer-grid">
         <div className="footer-brand">
           <span className="brand-mark"><ShieldIcon /></span>
-          <div><strong>КОНТУР</strong><p>Профессиональная защита остекления на Юге России.</p></div>
+          <div><strong>БЕЗ ОСКОЛКОВ</strong><p>Профессиональная защита остекления на Юге России.</p></div>
         </div>
         <div>
           <p className="footer-title">Навигация</p>
@@ -31,7 +31,7 @@ export function SiteFooter({ phone }: { phone: string }) {
         </div>
       </div>
       <div className="shell footer-bottom">
-        <span>© {new Date().getFullYear()} Контур Защиты</span>
+        <span>© {new Date().getFullYear()} Без Осколков</span>
         <span>Информация на сайте не является публичной офертой</span>
       </div>
       <div className="codecake-wrapper">

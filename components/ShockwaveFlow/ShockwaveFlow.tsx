@@ -16,7 +16,7 @@ export function ShockwaveFlow() {
       {stages.map((stage, index) => (
         <article className="shock-card" style={{ "--stage": index } as React.CSSProperties} key={stage.number}>
           <div className="shock-image">
-            <Image src={stage.image} alt="" fill sizes="(max-width: 720px) 76vw, 19vw" />
+            <Image src={stage.image} alt="" fill sizes="(max-width: 900px) calc(100vw - 54px), (max-width: 1304px) 19vw, 236px" />
           </div>
           <h3>{stage.title}</h3>
           <p>{stage.text}</p>

@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ModalPageWindow } from '../ModalPageWindow';
 import { Menu } from './Menu';
 import s from './Burger.module.scss';
@@ -7,7 +7,7 @@ import s from './Burger.module.scss';
 export const Burger = () => {
   const [isOpen, setOpen] = useState(false);
 
-  const onClose = () => setOpen(false);
+  const onClose = useCallback(() => setOpen(false), []);
   return (
     <>
       <button
@@ -38,6 +38,7 @@ export const Burger = () => {
         backdropClassName={s.backdrop}
         slidePosition="x"
         exitActiveFast={true}
+        ariaLabelledBy="mobile-menu-title"
       >
         <Menu onCloseAction={onClose} />
       </ModalPageWindow>

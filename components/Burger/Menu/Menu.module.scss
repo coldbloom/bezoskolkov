@@ -47,9 +47,45 @@
 }
 
 .menuHeader {
+  position: relative;
   margin-bottom: 13px;
+  padding-right: 52px;
   padding-bottom: 24px;
   border-bottom: 1px solid var(--line);
+}
+
+.closeButton {
+  position: absolute;
+  top: -4px;
+  right: 0;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  padding: 0;
+  background: transparent;
+  color: var(--ink);
+
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+  }
+
+  &:hover {
+    border-color: var(--signal);
+    background: var(--signal);
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(242, 211, 12, 0.5);
+    outline-offset: 2px;
+  }
 }
 
 .menuEyebrow {

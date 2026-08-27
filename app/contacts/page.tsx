@@ -1,23 +1,37 @@
-import type { Metadata } from "next";
 import Link from "next/link";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ContentPage } from "@/components/ContentPage";
 import { ArrowIcon, PhoneIcon } from "@/components/icons";
+import { JsonLd } from "@/components/JsonLd";
 import { regions } from "@/lib/regions";
-import { DEFAULT_PHONE, formatPhone, phoneHref } from "@/lib/site";
+import { createPageMetadata } from "@/lib/seo";
+import { DEFAULT_PHONE, SITE_NAME, SITE_URL, formatPhone, phoneHref } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "Контакты",
-  description: "Контакты компании Контур Защиты. Консультация и расчёт защитной противоосколочной плёнки для окон на Юге России.",
-  alternates: { canonical: "/contacts" },
-};
+  description: "Контакты компании Без Осколков. Консультация и расчёт защитной противоосколочной плёнки для окон на Юге России.",
+  path: "/contacts",
+});
 
 export default function ContactsPage() {
   const phone = process.env.DEFAULT_PHONE || DEFAULT_PHONE;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "@id": `${SITE_URL}/contacts#webpage`,
+    url: `${SITE_URL}/contacts`,
+    name: `Контакты | ${SITE_NAME}`,
+    inLanguage: "ru-RU",
+    isPartOf: { "@id": `${SITE_URL}/#website` },
+    about: { "@id": `${SITE_URL}/#organization` },
+  };
 
   return (
     <ContentPage>
+      <JsonLd data={jsonLd} />
       <section className="contact-page">
         <div className="shell">
+          <Breadcrumbs items={[{ label: "Главная", href: "/" }, { label: "Контакты", href: "/contacts" }]} />
           <span className="section-code">КОНТАКТЫ</span>
           <h1>Давайте обсудим<br /><em>ваше остекление.</em></h1>
           <div className="contact-grid">

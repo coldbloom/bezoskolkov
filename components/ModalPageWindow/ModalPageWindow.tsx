@@ -18,6 +18,7 @@ type ModalPageWindowProps = {
   className?: string;
   backdropClassName?: string;
   style?: CSSProperties;
+  ariaLabelledBy?: string;
 };
 
 export const ModalPageWindow = ({
@@ -28,11 +29,13 @@ export const ModalPageWindow = ({
   slidePosition = 'y',
   className,
   backdropClassName,
-  style = {}
+  style = {},
+  ariaLabelledBy,
 }: ModalPageWindowProps) => {
   const container = usePortalContainer('modal-window');
   const modalRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
+  const returnFocusRef = useRef<HTMLElement | null>(null);
 
   const transitionClasses = slidePosition === 'x'
     ? {
@@ -49,16 +52,80 @@ export const ModalPageWindow = ({
     };
 
   useEffect(() => {
-    const handleBodyOverflow = () => {
-      document.body.style.overflow = isOpen ? 'hidden' : 'auto';
-    };
+    const previousOverflow = document.body.style.overflow;
 
-    handleBodyOverflow();
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    }
 
     return () => {
-      document.body.style.overflow = 'auto'; // Reset on component unmount
+      document.body.style.overflow = previousOverflow;
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    returnFocusRef.current = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+
+    const modal = modalRef.current;
+    const focusableSelector = [
+      'a[href]',
+      'button:not([disabled])',
+      'input:not([disabled])',
+      'select:not([disabled])',
+      'textarea:not([disabled])',
+      '[tabindex]:not([tabindex="-1"])',
+    ].join(',');
+
+    const focusFirstElement = () => {
+      const firstFocusable = modal?.querySelector<HTMLElement>(focusableSelector);
+      (firstFocusable || modal)?.focus();
+    };
+
+    const animationFrame = requestAnimationFrame(focusFirstElement);
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onCloseAction?.();
+        return;
+      }
+
+      if (event.key !== 'Tab' || !modal) return;
+
+      const focusableElements = Array.from(modal.querySelectorAll<HTMLElement>(focusableSelector));
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements.at(-1);
+
+      if (!firstElement || !lastElement) {
+        event.preventDefault();
+        modal.focus();
+        return;
+      }
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      document.removeEventListener('keydown', handleKeyDown);
+
+      if (returnFocusRef.current?.isConnected) {
+        returnFocusRef.current.focus();
+      }
+    };
+  }, [isOpen, onCloseAction]);
 
   return (
     container &&
@@ -77,7 +144,7 @@ export const ModalPageWindow = ({
             exitActive: s['backdrop-exit-active']
           }}
         >
-          <div ref={backdropRef} className={cn(s.backdrop, backdropClassName)} onClick={onCloseAction} />
+          <div ref={backdropRef} className={cn(s.backdrop, backdropClassName)} onClick={onCloseAction} aria-hidden="true" />
         </CSSTransition>
 
         <CSSTransition
@@ -87,7 +154,15 @@ export const ModalPageWindow = ({
           unmountOnExit
           classNames={transitionClasses}
         >
-          <div ref={modalRef} className={cn(s.modal, className)} style={{ ...style }}>
+          <div
+            ref={modalRef}
+            className={cn(s.modal, className)}
+            style={{ ...style }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={ariaLabelledBy}
+            tabIndex={-1}
+          >
             {children}
           </div>
         </CSSTransition>

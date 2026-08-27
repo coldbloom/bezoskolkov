@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
 import { ProtectionPage } from "@/components/ProtectionPage";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "Защитная противоосколочная плёнка для окон",
   description: "Профессиональная установка защитной противоосколочной плёнки для окон. Снижаем риск травм от разлёта стекла при ударах, взрывах и разрушении остекления.",
-  alternates: { canonical: "/" },
-};
+  path: "/",
+});
 
 export default function Home() {
   return <ProtectionPage />;

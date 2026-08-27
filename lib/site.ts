@@ -1,7 +1,7 @@
-export const SITE_NAME = "Контур Защиты";
+export const SITE_NAME = "Без Осколков";
 export const DEFAULT_PHONE = "+79895052785";
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "http://localhost:3000";
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://bezoskolkov.ru";
 
 export function formatPhone(phone: string) {
   const digits = phone.replace(/\D/g, "");

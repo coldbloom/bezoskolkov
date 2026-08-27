@@ -47,8 +47,13 @@ export const Menu = ({ onCloseAction }: WithOnCloseProps) => {
     <nav id="site-mobile-menu" className={s.modalWrapper} aria-label="Мобильная навигация">
       <div className={s.tabsWrapper}>
         <div className={s.menuHeader}>
-          <p className={s.menuEyebrow}>Контур Защиты</p>
-          <h3 className={s.menuTitle}>Защитная плёнка для окон</h3>
+          <p className={s.menuEyebrow}>Без Осколков</p>
+          <h3 className={s.menuTitle} id="mobile-menu-title">Защитная плёнка для окон</h3>
+          <button className={s.closeButton} type="button" onClick={onCloseAction} aria-label="Закрыть меню">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 6l12 12M18 6 6 18" />
+            </svg>
+          </button>
         </div>
 
         {pages.slice(0, 3).map((page) => (

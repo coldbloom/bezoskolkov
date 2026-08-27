@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProtectionPage } from "@/components/ProtectionPage";
 import { getRegion, regions } from "@/lib/regions";
+import { createPageMetadata } from "@/lib/seo";
 
 export function generateStaticParams() {
   return regions.map(({ slug }) => ({ slug }));
@@ -17,12 +18,11 @@ export async function generateMetadata({ params }: PageProps<"/regions/[slug]">)
   const title = `Защитная плёнка для окон ${region.locative}`;
   const description = `Установка защитной противоосколочной плёнки ${region.locative}. Снижаем разлёт осколков при разрушении стекла. Квартиры, дома, офисы, витрины.`;
 
-  return {
+  return createPageMetadata({
     title,
     description,
-    alternates: { canonical: `/regions/${region.slug}` },
-    openGraph: { title, description, url: `/regions/${region.slug}` },
-  };
+    path: `/regions/${region.slug}`,
+  });
 }
 
 export default async function RegionPage({ params }: PageProps<"/regions/[slug]">) {
