@@ -36,7 +36,7 @@ export function Breadcrumbs({ items, variant = "light" }: BreadcrumbsProps) {
           {items.map((item, index) => (
             <li key={item.href}>
               {index < items.length - 1
-                ? <Link href={item.href}>{item.label}</Link>
+                ? <Link href={item.href} prefetch={false}>{item.label}</Link>
                 : <span aria-current="page">{item.label}</span>}
               {index < items.length - 1 && <span aria-hidden="true">/</span>}
             </li>

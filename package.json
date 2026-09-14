@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "build": "next build --webpack",
+    "lint": "eslint",
+    "check:export": "node scripts/verify-export.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",

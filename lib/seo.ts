@@ -9,16 +9,11 @@ export type PageData = {
 };
 
 const socialImage = {
-  url: "/opengraph-image",
+  url: "/og-image.png",
   width: 1200,
   height: 630,
   alt: "Защитная противоосколочная плёнка для окон",
   type: "image/png",
-};
-
-const twitterImage = {
-  ...socialImage,
-  url: "/twitter-image",
 };
 
 const defaultKeywords = [
@@ -51,7 +46,7 @@ export function createPageMetadata(pageData: PageData): Metadata {
       card: "summary_large_image",
       title: fullTitle,
       description: pageData.description,
-      images: [twitterImage],
+      images: [socialImage],
     },
   };
 }

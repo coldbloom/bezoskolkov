@@ -8,7 +8,6 @@ export type Region = {
   description: string;
   serviceArea: string[];
   phone: string;
-  lastModified: string;
 };
 
 const fallback = process.env.DEFAULT_PHONE || DEFAULT_PHONE;
@@ -23,7 +22,6 @@ export const regions: Region[] = [
       "Выезжаем на объекты по Югу России: оцениваем остекление, подбираем защитную систему и выполняем профессиональный монтаж.",
     serviceArea: ["Ростовская область", "Краснодарский край", "Крым", "Новые регионы"],
     phone: process.env.REGION_PHONE_SOUTH || fallback,
-    lastModified: "2026-08-24",
   },
   {
     slug: "rostov-na-donu",
@@ -34,7 +32,6 @@ export const regions: Region[] = [
       "Защита окон квартир, домов, офисов и коммерческих объектов в Ростове-на-Дону и по Ростовской области.",
     serviceArea: ["Ростов-на-Дону", "Батайск", "Аксай", "Таганрог"],
     phone: process.env.REGION_PHONE_ROSTOV || fallback,
-    lastModified: "2026-08-24",
   },
   {
     slug: "krasnodar",
@@ -45,7 +42,6 @@ export const regions: Region[] = [
       "Монтаж противоосколочной плёнки в Краснодаре и по краю — для существующих окон и крупноформатного остекления.",
     serviceArea: ["Краснодар", "Новороссийск", "Анапа", "Сочи"],
     phone: process.env.REGION_PHONE_KRASNODAR || fallback,
-    lastModified: "2026-08-24",
   },
   {
     slug: "donetsk",
@@ -56,7 +52,6 @@ export const regions: Region[] = [
       "Подбираем решения для снижения риска травмирования оконными осколками в жилых и коммерческих помещениях Донецка и ДНР.",
     serviceArea: ["Донецк", "Макеевка", "Мариуполь", "Горловка"],
     phone: process.env.REGION_PHONE_DONETSK || fallback,
-    lastModified: "2026-08-24",
   },
   {
     slug: "lugansk",
@@ -67,7 +62,6 @@ export const regions: Region[] = [
       "Профессиональная установка защитной плёнки на окна квартир, домов, офисов и общественных объектов Луганска и ЛНР.",
     serviceArea: ["Луганск", "Алчевск", "Северодонецк", "Краснодон"],
     phone: process.env.REGION_PHONE_LUGANSK || fallback,
-    lastModified: "2026-08-24",
   },
   {
     slug: "krym",
@@ -78,10 +72,15 @@ export const regions: Region[] = [
       "Защита остекления в квартирах, частных домах, гостиницах, офисах и коммерческих объектах по Республике Крым.",
     serviceArea: ["Симферополь", "Севастополь", "Ялта", "Керчь"],
     phone: process.env.REGION_PHONE_CRYM || fallback,
-    lastModified: "2026-08-24",
   },
 ];
 
+export const localRegions = regions.filter((region) => region.slug !== "yug-rossii");
+
 export function getRegion(slug: string) {
   return regions.find((region) => region.slug === slug);
+}
+
+export function regionHref(region: Region) {
+  return region.slug === "yug-rossii" ? "/" : `/regions/${region.slug}/`;
 }

@@ -22,7 +22,7 @@
 :global(.hero-meta span:not(:last-child)::after) { content: "•"; margin-left: 20px; color: var(--signal); }
 :global(.hero-visual) { position: relative; min-width: 0; width: 100%; aspect-ratio: 3 / 2; overflow: hidden; background: #222; border-radius: 2px; box-shadow: 0 35px 80px rgba(0, 0, 0, 0.35); }
 :global(.hero-visual::after) { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(16, 18, 15, 0.12), transparent 55%, rgba(16, 18, 15, 0.45)); pointer-events: none; }
-:global(.hero-visual img) { object-fit: contain; }
+:global(.hero-visual img) { display: block; width: 100%; height: 100%; object-fit: contain; }
 :global(.hero-corner) { position: absolute; z-index: 3; width: 48px; height: 48px; }
 :global(.hero-corner.top-left) { top: 18px; left: 18px; border-top: 2px solid var(--signal); border-left: 2px solid var(--signal); }
 :global(.hero-corner.bottom-right) { right: 18px; bottom: 18px; border-right: 2px solid var(--signal); border-bottom: 2px solid var(--signal); }
@@ -36,7 +36,7 @@
 :global(.comparison) { background: var(--paper); }
 :global(.comparison-figure) { margin: 0; overflow: hidden; border-radius: 4px; background: #ddd; }
 :global(.comparison-image) { position: relative; aspect-ratio: 3 / 2; overflow: hidden; background: #292a27; }
-:global(.comparison-image img) { object-fit: contain; }
+:global(.comparison-image img) { display: block; width: 100%; height: 100%; object-fit: contain; }
 :global(.comparison-image::after) { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: var(--signal); box-shadow: 0 0 24px rgba(242, 211, 12, 0.7); }
 :global(.comparison-figure figcaption) { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; padding: 1px; background: rgba(19, 21, 18, 0.2); color: #fff; }
 :global(.comparison-figure figcaption span) { display: flex; flex-direction: column; padding: 18px 20px; background: var(--ink); font-size: 11px; text-transform: uppercase; }
@@ -182,6 +182,112 @@
   :global(.hero-copy) { padding-right: 25px; }
   :global(.benefit-card) { padding: 22px; }
   :global(.system-grid), :global(.applications-grid), :global(.estimate-shell) { gap: 60px; }
+}
+
+@keyframes homeRise {
+  from { translate: 0 34px; }
+  to { translate: 0 0; }
+}
+
+@keyframes homeCard {
+  from { translate: 0 26px; scale: 0.975; }
+  to { translate: 0 0; scale: 1; }
+}
+
+@keyframes homeRow {
+  from { translate: -24px 0; }
+  to { translate: 0 0; }
+}
+
+@keyframes homeImage {
+  from { scale: 1.045; }
+  to { scale: 1; }
+}
+
+@keyframes homeProgress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    &.animatedHome {
+      &::before {
+        content: "";
+        position: fixed;
+        z-index: 80;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--signal);
+        transform-origin: left center;
+        pointer-events: none;
+        animation: homeProgress 1s linear both;
+        animation-timeline: scroll(root block);
+      }
+
+      :global(.section-heading h2),
+      :global(.section-heading > p),
+      :global(.system-copy h2),
+      :global(.application-intro h2),
+      :global(.documents-grid h2),
+      :global(.faq-grid h2),
+      :global(.estimate-copy h2) {
+        animation: homeRise 1s linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 34%;
+      }
+
+      :global(.comparison-figure),
+      :global(.layers-diagram),
+      :global(.shock blockquote),
+      :global(.document-card),
+      :global(.truth-line),
+      :global(.system-note) {
+        animation: homeRise 1s linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 32%;
+      }
+
+      :global(.comparison-image img) {
+        animation: homeImage 1s linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 60%;
+      }
+
+      :global(.benefit-card),
+      :global(.solution-grid article),
+      :global(.region-links a) {
+        animation: homeCard 1s linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 33%;
+      }
+
+      :global(.benefit-card:nth-child(2)),
+      :global(.solution-grid article:nth-child(2)),
+      :global(.region-links a:nth-child(2)) {
+        animation-range: entry 5% cover 40%;
+      }
+
+      :global(.benefit-card:nth-child(3)),
+      :global(.solution-grid article:nth-child(3)),
+      :global(.region-links a:nth-child(3)) {
+        animation-range: entry 10% cover 47%;
+      }
+
+      :global(.benefit-card:nth-child(4)) {
+        animation-range: entry 15% cover 54%;
+      }
+
+      :global(.install-list article),
+      :global(.application-list article) {
+        animation: homeRow 1s linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 28%;
+      }
+    }
+  }
 }
 
 @media (max-width: 900px) {

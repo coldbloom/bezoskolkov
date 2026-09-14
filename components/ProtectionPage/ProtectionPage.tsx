@@ -1,10 +1,11 @@
-import Image from "next/image";
+/* eslint-disable @next/next/no-img-element -- Responsive WebP files are generated ahead of the static export. */
 import Link from "next/link";
 import type { Region } from "@/lib/regions";
-import { regions } from "@/lib/regions";
+import { localRegions, regionHref, regions } from "@/lib/regions";
 import { DEFAULT_PHONE, SITE_NAME, SITE_URL, formatPhone, phoneHref } from "@/lib/site";
 import { ArrowIcon, CheckIcon, ClockIcon, FragmentsIcon, LayersIcon, PhoneIcon, ShieldIcon } from "@/components/icons";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { JsonLd } from "@/components/JsonLd";
 import { LeadForm } from "@/components/LeadForm";
 import { ShockwaveFlow } from "@/components/ShockwaveFlow";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -49,7 +50,7 @@ export function ProtectionPage({ region }: ProtectionPageProps) {
   const phone = region?.phone || process.env.DEFAULT_PHONE || DEFAULT_PHONE;
   const regionName = region?.name || "Юг России";
   const location = region ? region.locative : "на Юге России";
-  const canonicalPath = region ? `/regions/${region.slug}` : "/";
+  const canonicalPath = region ? regionHref(region) : "/";
   const serviceDescription = region?.description || "Профессиональный подбор и монтаж защитной противоосколочной плёнки для окон на Юге России.";
   const heroMeta = region?.serviceArea || ["Для квартир", "Домов", "Офисов", "Витрин"];
   const jsonLd = {
@@ -83,17 +84,17 @@ export function ProtectionPage({ region }: ProtectionPageProps) {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+      <JsonLd data={jsonLd} />
       <SiteHeader phone={phone} />
-      <main className={styles.root}>
+      <main className={region ? styles.root : `${styles.root} ${styles.animatedHome}`}>
         <section className="hero">
           <div className="hero-backdrop" aria-hidden="true" />
-          {region && (
+          {region && region.slug !== "yug-rossii" && (
             <div className="shell">
               <Breadcrumbs
                 items={[
                   { label: "Главная", href: "/" },
-                  { label: region.shortName, href: `/regions/${region.slug}` },
+                  { label: region.shortName, href: regionHref(region) },
                 ]}
                 variant="dark"
               />
@@ -115,11 +116,15 @@ export function ProtectionPage({ region }: ProtectionPageProps) {
               </div>
             </div>
             <div className="hero-visual">
-              <Image
-                src="/title.png"
+              <img
+                src="/hero-1536.webp"
+                srcSet="/hero-768.webp 768w, /hero-1280.webp 1280w, /hero-1536.webp 1536w"
                 alt="Профессиональная установка защитной плёнки и пример удержания разрушенного стекла"
-                fill
-                preload
+                width={1536}
+                height={1024}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
                 sizes="(max-width: 900px) calc(100vw - 30px), (max-width: 1304px) 52vw, 645px"
               />
             </div>
@@ -135,7 +140,16 @@ export function ProtectionPage({ region }: ProtectionPageProps) {
             </div>
             <figure className="comparison-figure">
               <div className="comparison-image">
-                <Image src="/example.png" alt="Сравнение разрушения окна без защитной плёнки и с защитной плёнкой" fill sizes="(max-width: 900px) 100vw, 1180px" />
+                <img
+                  src="/comparison-1536.webp"
+                  srcSet="/comparison-768.webp 768w, /comparison-1280.webp 1280w, /comparison-1536.webp 1536w"
+                  alt="Сравнение разрушения окна без защитной плёнки и с защитной плёнкой"
+                  width={1536}
+                  height={1024}
+                  loading="lazy"
+                  decoding="async"
+                  sizes="(max-width: 900px) 100vw, 1180px"
+                />
               </div>
               <figcaption>
                 <span><b>Без плёнки</b> Свободный разлёт фрагментов</span>
@@ -233,7 +247,7 @@ export function ProtectionPage({ region }: ProtectionPageProps) {
           <div className="shell">
             <div className="section-heading split-heading"><div><span className="section-code">09 — ГЕОГРАФИЯ</span><h2>Работаем<br /><em>по Югу России.</em></h2></div><p>{region?.description || "Выезжаем на жилые и коммерческие объекты. Для каждого региона действует отдельная консультация и номер связи."}</p></div>
             <div className="region-links">
-              {regions.map((item) => <Link className={region?.slug === item.slug ? "active" : ""} href={`/regions/${item.slug}`} key={item.slug}><span>{item.shortName}</span><small>{item.serviceArea.slice(0, 3).join(" · ")}</small><ArrowIcon /></Link>)}
+              {localRegions.map((item) => <Link className={region?.slug === item.slug ? "active" : ""} href={regionHref(item)} prefetch={false} key={item.slug}><span>{item.shortName}</span><small>{item.serviceArea.slice(0, 3).join(" · ")}</small><ArrowIcon /></Link>)}
             </div>
           </div>
         </section>

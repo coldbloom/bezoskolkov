@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProtectionPage } from "@/components/ProtectionPage";
-import { getRegion, regions } from "@/lib/regions";
+import { getRegion, regionHref, regions } from "@/lib/regions";
 import { createPageMetadata } from "@/lib/seo";
 
 export function generateStaticParams() {
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PageProps<"/regions/[slug]">)
   return createPageMetadata({
     title,
     description,
-    path: `/regions/${region.slug}`,
+    path: regionHref(region),
   });
 }
 

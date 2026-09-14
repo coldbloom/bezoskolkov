@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import s from './Menu.module.scss';
 
 type WithOnCloseProps = {
@@ -11,8 +10,8 @@ type WithOnCloseProps = {
 
 const pages = [
   { title: 'Главная', href: '/' },
-  { title: 'О компании', href: '/company' },
-  { title: 'Контакты', href: '/contacts' },
+  { title: 'О компании', href: '/company/' },
+  { title: 'Контакты', href: '/contacts/' },
   { title: 'Рассчитать стоимость', href: '/#estimate' },
 ];
 
@@ -33,15 +32,6 @@ const protectionPages = [
 
 export const Menu = ({ onCloseAction }: WithOnCloseProps) => {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
-  const pathname = usePathname();
-
-  const handleLinkClick = (href: string) => {
-    const targetPathname = href.split('#')[0] || '/';
-
-    if (pathname === targetPathname) {
-      onCloseAction();
-    }
-  };
 
   return (
     <nav id="site-mobile-menu" className={s.modalWrapper} aria-label="Мобильная навигация">
@@ -57,7 +47,7 @@ export const Menu = ({ onCloseAction }: WithOnCloseProps) => {
         </div>
 
         {pages.slice(0, 3).map((page) => (
-          <Link key={page.href} href={page.href} className={s.tabLink} onClick={() => handleLinkClick(page.href)}>
+          <Link key={page.href} href={page.href} prefetch={false} className={s.tabLink} onClick={onCloseAction}>
             {page.title}
           </Link>
         ))}
@@ -83,8 +73,9 @@ export const Menu = ({ onCloseAction }: WithOnCloseProps) => {
               <Link
                 key={page.href}
                 href={page.href}
+                prefetch={false}
                 className={s.subTabLink}
-                onClick={() => handleLinkClick(page.href)}
+                onClick={onCloseAction}
               >
                 {page.title}
               </Link>
@@ -93,7 +84,7 @@ export const Menu = ({ onCloseAction }: WithOnCloseProps) => {
         )}
 
         {pages.slice(3).map((page) => (
-          <Link key={page.href} href={page.href} className={`${s.tabLink} ${s.ctaLink}`} onClick={() => handleLinkClick(page.href)}>
+          <Link key={page.href} href={page.href} prefetch={false} className={`${s.tabLink} ${s.ctaLink}`} onClick={onCloseAction}>
             {page.title}
           </Link>
         ))}

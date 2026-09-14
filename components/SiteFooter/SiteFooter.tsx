@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { regions } from "@/lib/regions";
+import { localRegions, regionHref } from "@/lib/regions";
 import { formatPhone, phoneHref } from "@/lib/site";
 import { CodeCake } from "@/components/CodeCake";
 import { ShieldIcon } from "@/components/icons";
@@ -15,19 +15,19 @@ export function SiteFooter({ phone }: { phone: string }) {
         </div>
         <div>
           <p className="footer-title">Навигация</p>
-          <Link href="/">Главная</Link>
-          <Link href="/company">О компании</Link>
-          <Link href="/contacts">Контакты</Link>
+          <Link href="/" prefetch={false}>Главная</Link>
+          <Link href="/company/" prefetch={false}>О компании</Link>
+          <Link href="/contacts/" prefetch={false}>Контакты</Link>
         </div>
         <div>
           <p className="footer-title">Регионы</p>
-          {regions.map((region) => <Link href={`/regions/${region.slug}`} key={region.slug}>{region.shortName}</Link>)}
+          {localRegions.map((region) => <Link href={regionHref(region)} prefetch={false} key={region.slug}>{region.shortName}</Link>)}
         </div>
         <div className="footer-contact">
           <p className="footer-title">Консультация</p>
           <a className="footer-phone" href={phoneHref(phone)}>{formatPhone(phone)}</a>
           <p>Пришлите размеры и фото окон — подготовим предварительный расчёт.</p>
-          <Link className="text-link" href="/#estimate">Получить расчёт →</Link>
+          <Link className="text-link" href="/#estimate" prefetch={false}>Получить расчёт →</Link>
         </div>
       </div>
       <div className="shell footer-bottom">
