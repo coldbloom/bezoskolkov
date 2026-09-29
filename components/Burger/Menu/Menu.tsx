@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import Link from '@/components/NavigationLink';
 import s from './Menu.module.scss';
 
 type WithOnCloseProps = {
@@ -37,7 +37,7 @@ export const Menu = ({ onCloseAction }: WithOnCloseProps) => {
     <nav id="site-mobile-menu" className={s.modalWrapper} aria-label="Мобильная навигация">
       <div className={s.tabsWrapper}>
         <div className={s.menuHeader}>
-          <p className={s.menuEyebrow}>Без Осколков</p>
+          <p className={s.menuEyebrow}>ОКНО ЩИТ</p>
           <h3 className={s.menuTitle} id="mobile-menu-title">Защитная плёнка для окон</h3>
           <button className={s.closeButton} type="button" onClick={onCloseAction} aria-label="Закрыть меню">
             <svg viewBox="0 0 24 24" aria-hidden="true">

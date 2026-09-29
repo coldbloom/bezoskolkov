@@ -1,12 +1,15 @@
 /* eslint-disable @next/next/no-img-element -- Responsive WebP files are generated ahead of the static export. */
-import Link from "next/link";
+import Link from "@/components/NavigationLink";
 import type { Region } from "@/lib/regions";
 import { localRegions, regionHref, regions } from "@/lib/regions";
 import { DEFAULT_PHONE, SITE_NAME, SITE_URL, formatPhone, phoneHref } from "@/lib/site";
+import { getCanonicalUrl, getPageTitle, getProtectionPageData } from "@/lib/seo";
 import { ArrowIcon, CheckIcon, ClockIcon, FragmentsIcon, LayersIcon, PhoneIcon, ShieldIcon } from "@/components/icons";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { JsonLd } from "@/components/JsonLd";
 import { LeadForm } from "@/components/LeadForm";
+import { ContactModalTrigger } from "@/components/ContactModal/ContactModalTrigger";
+import { MobileCall } from "@/components/MobileCall/MobileCall";
 import { ShockwaveFlow } from "@/components/ShockwaveFlow";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -50,19 +53,37 @@ export function ProtectionPage({ region }: ProtectionPageProps) {
   const phone = region?.phone || process.env.DEFAULT_PHONE || DEFAULT_PHONE;
   const regionName = region?.name || "Юг России";
   const location = region ? region.locative : "на Юге России";
-  const canonicalPath = region ? regionHref(region) : "/";
-  const serviceDescription = region?.description || "Профессиональный подбор и монтаж защитной противоосколочной плёнки для окон на Юге России.";
+  const pageData = getProtectionPageData(region);
+  const canonicalUrl = getCanonicalUrl(pageData.path);
   const heroMeta = region?.serviceArea || ["Для квартир", "Домов", "Офисов", "Витрин"];
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
+        "@type": "WebPage",
+        "@id": `${canonicalUrl}#webpage`,
+        url: canonicalUrl,
+        name: getPageTitle(pageData.title),
+        description: pageData.description,
+        inLanguage: "ru-RU",
+        isPartOf: { "@id": `${SITE_URL}/#website` },
+        mainEntity: { "@id": `${canonicalUrl}#service` },
+        hasPart: { "@id": `${canonicalUrl}#faq` },
+        primaryImageOfPage: {
+          "@type": "ImageObject",
+          url: `${SITE_URL}/hero-1536.webp`,
+          width: 1536,
+          height: 1024,
+        },
+      },
+      {
         "@type": "Service",
-        "@id": `${SITE_URL}${canonicalPath}#service`,
-        name: `Защитная противоосколочная плёнка для окон ${location}`,
-        description: serviceDescription,
-        url: `${SITE_URL}${canonicalPath}`,
-        serviceType: "Защита остекления противоосколочной плёнкой",
+        "@id": `${canonicalUrl}#service`,
+        name: `Установка защитной противоосколочной плёнки на окна ${location}`,
+        description: pageData.description,
+        url: canonicalUrl,
+        mainEntityOfPage: { "@id": `${canonicalUrl}#webpage` },
+        serviceType: "Подбор и установка защитной противоосколочной плёнки на окна",
         areaServed: region?.serviceArea || regions.map((item) => item.name),
         provider: {
           "@type": "Organization",
@@ -73,6 +94,10 @@ export function ProtectionPage({ region }: ProtectionPageProps) {
       },
       {
         "@type": "FAQPage",
+        "@id": `${canonicalUrl}#faq`,
+        url: `${canonicalUrl}#faq`,
+        inLanguage: "ru-RU",
+        isPartOf: { "@id": `${canonicalUrl}#webpage` },
         mainEntity: faq.map(([question, answer]) => ({
           "@type": "Question",
           name: question,
@@ -108,8 +133,8 @@ export function ProtectionPage({ region }: ProtectionPageProps) {
                 {region?.description || "Снижаем риск травмирования осколками стекла при взрывах, ударах и разрушении остекления."}
               </p>
               <div className="hero-actions">
-                <a className="button button-primary" href="#estimate">Рассчитать стоимость <ArrowIcon /></a>
-                <a className="phone-link" href={phoneHref(phone)}><PhoneIcon /><span><small>Консультация</small>{formatPhone(phone)}</span></a>
+                <ContactModalTrigger className="button button-primary" regionName={regionName} phone={phone} position="hero">Рассчитать стоимость <ArrowIcon /></ContactModalTrigger>
+                <a className="phone-link" href={phoneHref(phone)} data-analytics-goal="phone_click" data-cta-position="hero"><PhoneIcon /><span><small>Консультация</small>{formatPhone(phone)}</span></a>
               </div>
               <div className="hero-meta">
                 {heroMeta.map((item) => <span key={item}>{item}</span>)}
@@ -266,7 +291,7 @@ export function ProtectionPage({ region }: ProtectionPageProps) {
           </div>
         </section>
       </main>
-      <a className={`${styles.root} mobile-call`} href={phoneHref(phone)} aria-label={`Позвонить ${formatPhone(phone)}`}><PhoneIcon /><span>Позвонить</span></a>
+      <MobileCall phone={phone} />
       <SiteFooter phone={phone} />
     </>
   );

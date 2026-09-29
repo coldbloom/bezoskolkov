@@ -1,8 +1,28 @@
 .form,
 .success {
+  min-width: 0;
   padding: 38px;
   background: #f5f4ed;
   box-shadow: 0 28px 65px rgba(63, 57, 5, 0.18);
+}
+
+.fields {
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  padding: 0;
+
+  &:disabled .control { opacity: 0.65; }
+  &:disabled .submit { opacity: 0.55; cursor: not-allowed; transform: none; }
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .field {
@@ -18,6 +38,8 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+
+  > span { font-weight: 400; letter-spacing: 0; text-transform: none; }
 }
 
 .control {
@@ -30,7 +52,7 @@
   background: #fff;
   color: var(--ink);
   font: inherit;
-  font-size: 14px;
+  font-size: 16px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
   &:hover {
@@ -64,13 +86,49 @@
 
 .submit {
   width: 100%;
-  margin-top: 6px;
+  margin-top: 20px;
+}
+
+.consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: #53584f;
+  font-size: 12px;
+  line-height: 1.6;
+
+  input { width: 18px; height: 18px; flex-shrink: 0; margin: 2px 0 0; accent-color: var(--ink); }
+  a { text-decoration: underline; text-underline-offset: 3px; }
+}
+
+.unavailable,
+.submitError {
+  margin: 0 0 22px;
+  padding: 14px;
+  border-left: 3px solid var(--signal);
+  background: #eae9e0;
+  color: #41463c;
+  font-size: 13px;
+  line-height: 1.6;
+
+  a { white-space: nowrap; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+}
+
+.submitError { margin: 20px 0 0; border-color: #a43a31; }
+
+.policy {
+  margin: 10px 0 0 28px;
+  color: #62675e;
+  font-size: 11px;
+  line-height: 1.6;
+
+  a { text-decoration: underline; text-underline-offset: 3px; }
 }
 
 .note {
   margin: 14px 0 0;
-  color: #8a8e87;
-  font-size: 9px;
+  color: #62675e;
+  font-size: 11px;
   line-height: 1.5;
   text-align: center;
 }
@@ -114,6 +172,8 @@
   }
 }
 
+.inModal { padding: 26px 30px 30px; background: none; box-shadow: none; }
+
 @media (max-width: 620px) {
   .form,
   .success {
@@ -124,4 +184,6 @@
   .success {
     flex-direction: column;
   }
+
+  .inModal { margin: 0; padding: 20px; }
 }

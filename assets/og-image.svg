@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#131512"/>
+  <circle cx="1070" cy="500" r="310" fill="none" stroke="#f2d30c" stroke-opacity=".08" stroke-width="90"/>
+  <circle cx="1070" cy="500" r="264" fill="none" stroke="#f2d30c" stroke-opacity=".22" stroke-width="2"/>
+  <image x="72" y="60" width="64" height="64" href="../app/icon.svg"/>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="160" y="106" fill="#fff" font-size="32" font-weight="700" letter-spacing="4">ОКНО ЩИТ</text>
+    <text x="72" y="330" fill="#f2d30c" font-size="20" letter-spacing="3">ЗАЩИТА ОСТЕКЛЕНИЯ</text>
+    <text x="68" y="412" fill="#fff" font-size="64" font-weight="700">Защитная плёнка</text>
+    <text x="68" y="490" fill="#fff" font-size="64" font-weight="700">для ваших окон.</text>
+    <text x="72" y="574" fill="#aeb3a8" font-size="23">Подбор и монтаж на Юге России</text>
+    <text x="1128" y="574" text-anchor="end" fill="#f2d30c" font-size="23">oknoshchit.site</text>
+  </g>
+</svg>

@@ -1,18 +1,25 @@
 'use client'
 import { useCallback, useState } from 'react';
-import { ModalPageWindow } from '../ModalPageWindow';
-import { Menu } from './Menu';
+import dynamic from 'next/dynamic';
 import s from './Burger.module.scss';
+
+const MobileMenu = dynamic(() => import('./MobileMenu'), { ssr: false });
 
 export const Burger = () => {
   const [isOpen, setOpen] = useState(false);
+  // Keep the lazy wrapper mounted so CSSTransition can finish closing the panel.
+  const [hasOpened, setHasOpened] = useState(false);
 
   const onClose = useCallback(() => setOpen(false), []);
   return (
     <>
       <button
+        type="button"
         className={`${s.burgerBtn} ${isOpen ? s.burgerBtnOpen : ''}`}
-        onClick={() => setOpen(open => !open)}
+        onClick={() => {
+          setHasOpened(true);
+          setOpen(open => !open);
+        }}
         aria-label={isOpen ? 'Закрыть меню' : 'Открыть меню'}
         aria-expanded={isOpen}
         aria-controls="site-mobile-menu"
@@ -31,17 +38,7 @@ export const Burger = () => {
         )}
       </button>
 
-      <ModalPageWindow
-        isOpen={isOpen}
-        onCloseAction={onClose}
-        className={s.modalPage}
-        backdropClassName={s.backdrop}
-        slidePosition="x"
-        exitActiveFast={true}
-        ariaLabelledBy="mobile-menu-title"
-      >
-        <Menu onCloseAction={onClose} />
-      </ModalPageWindow>
+      {hasOpened && <MobileMenu isOpen={isOpen} onCloseAction={onClose} />}
     </>
   );
 };

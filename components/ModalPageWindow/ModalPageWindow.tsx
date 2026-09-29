@@ -39,14 +39,22 @@ export const ModalPageWindow = ({
 
   const transitionClasses = slidePosition === 'x'
     ? {
+      appear: s['slide-in-enter-x'],
+      appearActive: s['slide-in-enter-active-x'],
+      appearDone: s['slide-in-enter-done-x'],
       enter: s['slide-in-enter-x'],
       enterActive: s['slide-in-enter-active-x'],
+      enterDone: s['slide-in-enter-done-x'],
       exit: s['slide-out-x'],
       exitActive: exitActiveFast ? s['side-out-active-fast-x'] : s['slide-out-active-x']
     }
     : {
+      appear: s['slide-in-enter'],
+      appearActive: s['slide-in-enter-active'],
+      appearDone: s['slide-in-enter-done'],
       enter: s['slide-in-enter'],
       enterActive: s['slide-in-enter-active'],
+      enterDone: s['slide-in-enter-done'],
       exit: s['slide-out'],
       exitActive: exitActiveFast ? s['side-out-active-fast'] : s['slide-out-active']
     };
@@ -64,7 +72,7 @@ export const ModalPageWindow = ({
   }, [isOpen]);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || !container) return;
 
     returnFocusRef.current = document.activeElement instanceof HTMLElement
       ? document.activeElement
@@ -125,7 +133,7 @@ export const ModalPageWindow = ({
         returnFocusRef.current.focus();
       }
     };
-  }, [isOpen, onCloseAction]);
+  }, [isOpen, onCloseAction, container]);
 
   return (
     container &&
@@ -134,12 +142,17 @@ export const ModalPageWindow = ({
         <CSSTransition
           nodeRef={backdropRef}
           in={isOpen}
-          timeout={300}
+          appear
+          timeout={200}
           // компонент будет удален из DOM после завершения анимации выхода
           unmountOnExit
           classNames={{
+            appear: s['backdrop-enter'],
+            appearActive: s['backdrop-enter-active'],
+            appearDone: s['backdrop-enter-done'],
             enter: s['backdrop-enter'],
             enterActive: s['backdrop-enter-active'],
+            enterDone: s['backdrop-enter-done'],
             exit: s['backdrop-exit'],
             exitActive: s['backdrop-exit-active']
           }}
@@ -150,17 +163,19 @@ export const ModalPageWindow = ({
         <CSSTransition
           nodeRef={modalRef}
           in={isOpen}
+          appear
           timeout={300}
           unmountOnExit
           classNames={transitionClasses}
         >
           <div
             ref={modalRef}
-            className={cn(s.modal, className)}
+            className={cn(s.modal, slidePosition === 'x' && s.horizontal, className)}
             style={{ ...style }}
             role="dialog"
             aria-modal="true"
             aria-labelledby={ariaLabelledBy}
+            inert={!isOpen}
             tabIndex={-1}
           >
             {children}

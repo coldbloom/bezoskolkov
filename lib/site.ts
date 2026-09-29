@@ -1,7 +1,9 @@
-export const SITE_NAME = "Без Осколков";
+export const SITE_NAME = "ОКНО ЩИТ";
 export const DEFAULT_PHONE = "+79895052785";
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://bezoskolkov.ru";
+  (process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://oknoshchit.site").replace(/\/+$/, "");
+export const TELEGRAM_URL = "https://t.me/konstankk";
+export const MAX_URL = "https://max.ru/u/f9LHodD0cOI7hGFwnp4y8CBCeTVIs3kkyT-JqLq2wJc3ES2VjFOgy02xevs";
 
 export function formatPhone(phone: string) {
   const digits = phone.replace(/\D/g, "");

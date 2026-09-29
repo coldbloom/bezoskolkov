@@ -1,19 +1,24 @@
 import type { Metadata, Viewport } from "next";
 import { DEFAULT_PHONE, SITE_NAME, SITE_URL } from "@/lib/site";
 import { JsonLd } from "@/components/JsonLd";
+import { SiteAnalytics } from "@/components/SiteAnalytics";
+import { getPageTitle, homePageData } from "@/lib/seo";
 import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} — защитная плёнка для окон`,
+    default: getPageTitle(homePageData.title),
     template: `%s | ${SITE_NAME}`,
   },
-  description: "Защита остекления противоосколочной плёнкой для квартир, домов, офисов и коммерческих объектов на Юге России.",
-  keywords: ["защитная плёнка для окон", "противоосколочная плёнка", "защита остекления", "антивандальная плёнка", "плёнка от осколков"],
+  description: homePageData.description,
   authors: [{ name: SITE_NAME }],
   creator: SITE_NAME,
   publisher: SITE_NAME,
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION?.trim() || undefined,
+    yandex: process.env.YANDEX_SITE_VERIFICATION?.trim() || undefined,
+  },
   formatDetection: { email: false, address: false, telephone: false },
 };
 
@@ -24,16 +29,18 @@ const globalJsonLd = {
       "@type": "Organization",
       "@id": `${SITE_URL}/#organization`,
       name: SITE_NAME,
-      url: SITE_URL,
-      logo: `${SITE_URL}/favicon.ico`,
-      telephone: DEFAULT_PHONE,
+      url: `${SITE_URL}/`,
+      description: homePageData.description,
+      logo: `${SITE_URL}/icon.svg`,
+      telephone: process.env.DEFAULT_PHONE || DEFAULT_PHONE,
       areaServed: "Юг России",
     },
     {
       "@type": "WebSite",
       "@id": `${SITE_URL}/#website`,
-      url: SITE_URL,
+      url: `${SITE_URL}/`,
       name: SITE_NAME,
+      description: homePageData.description,
       inLanguage: "ru-RU",
       publisher: { "@id": `${SITE_URL}/#organization` },
     },
@@ -53,6 +60,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         <JsonLd data={globalJsonLd} />
         {children}
+        <SiteAnalytics />
       </body>
     </html>
   );

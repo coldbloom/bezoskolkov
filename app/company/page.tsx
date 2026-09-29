@@ -1,15 +1,15 @@
 /* eslint-disable @next/next/no-img-element -- Responsive WebP files are generated ahead of the static export. */
-import Link from "next/link";
+import { ContactModalTrigger } from "@/components/ContactModal/ContactModalTrigger";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ContentPage } from "@/components/ContentPage";
-import { CheckIcon, ShieldIcon } from "@/components/icons";
+import { CheckIcon } from "@/components/icons";
 import { JsonLd } from "@/components/JsonLd";
 import { createPageMetadata } from "@/lib/seo";
-import { SITE_NAME, SITE_URL } from "@/lib/site";
+import { DEFAULT_PHONE, SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const metadata = createPageMetadata({
   title: "О компании",
-  description: "Без Осколков — профессиональный подбор и монтаж защитных плёнок для окон на Юге России. Честно оцениваем задачу и не обещаем невозможного.",
+  description: "ОКНО ЩИТ — профессиональный подбор и монтаж защитных плёнок для окон на Юге России. Честно оцениваем задачу и не обещаем невозможного.",
   path: "/company/",
 });
 
@@ -61,8 +61,20 @@ export default function CompanyPage() {
       </section>
       <section className="company-system section">
         <div className="shell company-system-grid">
-          <div className="company-shield"><ShieldIcon /><span>БО</span></div>
-          <div><span className="section-code">ЧТО ВЫ ПОЛУЧАЕТЕ</span><h2>Понятное решение<br /><em>под ваш объект.</em></h2><ul><li><CheckIcon />Предварительную оценку по фото и размерам</li><li><CheckIcon />Осмотр остекления и оконных рам</li><li><CheckIcon />Подбор материала и способа крепления</li><li><CheckIcon />Профессиональный монтаж</li><li><CheckIcon />Рекомендации по эксплуатации после установки</li></ul><Link className="button button-primary" href="/#estimate" prefetch={false}>Обсудить задачу</Link></div>
+          <div>
+            <span className="section-code">ЧТО ВЫ ПОЛУЧАЕТЕ</span>
+            <h2>Понятное решение<br /><em>под ваш объект.</em></h2>
+          </div>
+          <div>
+            <ul>
+              <li><CheckIcon />Предварительную оценку по фото и размерам</li>
+              <li><CheckIcon />Осмотр остекления и оконных рам</li>
+              <li><CheckIcon />Подбор материала и способа крепления</li>
+              <li><CheckIcon />Профессиональный монтаж</li>
+              <li><CheckIcon />Рекомендации по эксплуатации после установки</li>
+            </ul>
+            <ContactModalTrigger className="button button-primary" regionName="Юг России" phone={process.env.DEFAULT_PHONE || DEFAULT_PHONE} position="company">Обсудить задачу</ContactModalTrigger>
+          </div>
         </div>
       </section>
     </ContentPage>

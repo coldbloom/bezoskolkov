@@ -1,16 +1,17 @@
-import Link from "next/link";
-import { formatPhone, phoneHref } from "@/lib/site";
+import Link from "@/components/NavigationLink";
+import { SITE_NAME } from "@/lib/site";
+import { QuickContact } from "@/components/QuickContact";
 import { Burger } from "@/components/Burger";
-import { PhoneIcon, ShieldIcon } from "@/components/icons";
+import { BrandMark } from "@/components/BrandMark";
 import styles from "./SiteHeader.module.scss";
 
 export function SiteHeader({ phone }: { phone: string }) {
   return (
     <header className={`${styles.root} site-header`}>
       <div className="header-inner shell">
-        <Link className="brand" href="/" prefetch={false} aria-label="Без Осколков — главная">
-          <span className="brand-mark"><ShieldIcon /></span>
-          <span className="brand-copy"><strong>БЕЗ ОСКОЛКОВ</strong><small>защита остекления</small></span>
+        <Link className="brand" href="/" prefetch={false} aria-label={`${SITE_NAME} — главная`}>
+          <BrandMark className="brand-mark" />
+          <span className="brand-copy"><strong>{SITE_NAME}</strong><small>защита остекления</small></span>
         </Link>
 
         <nav className="desktop-nav" aria-label="Основная навигация">
@@ -21,10 +22,7 @@ export function SiteHeader({ phone }: { phone: string }) {
           <Link href="/contacts/" prefetch={false}>Контакты</Link>
         </nav>
 
-        <a className="header-phone" href={phoneHref(phone)}>
-          <PhoneIcon />
-          <span><small>Ежедневно, 08:00–20:00</small>{formatPhone(phone)}</span>
-        </a>
+        <QuickContact phone={phone} />
 
         <Burger />
       </div>

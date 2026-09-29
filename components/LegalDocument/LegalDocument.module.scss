@@ -1,0 +1,71 @@
+.root {
+  padding-block: 24px 96px;
+}
+
+.document {
+  max-width: 900px;
+  margin: 32px auto 0;
+  padding: clamp(24px, 5vw, 64px);
+  border: 1px solid var(--line);
+  background: var(--white);
+  font-size: 16px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+
+  h1 {
+    margin: 0;
+    font-size: clamp(30px, 4.6vw, 56px);
+    line-height: 1.08;
+    letter-spacing: -0.045em;
+  }
+
+  h2 {
+    margin: 0 0 16px;
+    font-size: clamp(21px, 2.5vw, 28px);
+    line-height: 1.25;
+    letter-spacing: -0.025em;
+  }
+
+  section {
+    margin-top: 36px;
+    scroll-margin-top: calc(var(--site-header-height) + 24px);
+  }
+
+  p { margin: 0 0 16px; }
+  p:last-child { margin-bottom: 0; }
+  ul { padding-left: 24px; }
+  li + li { margin-top: 10px; }
+
+  a {
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: #b4a222;
+    text-underline-offset: 4px;
+  }
+
+  a:hover { text-decoration-color: currentColor; }
+}
+
+.header {
+  margin-bottom: 32px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--line);
+}
+
+.revision {
+  margin-top: 24px !important;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.notice {
+  padding: 16px 20px;
+  border-left: 3px solid var(--signal);
+  background: var(--paper);
+  font-size: 14px;
+}
+
+@media (max-width: 620px) {
+  .root { padding-bottom: 60px; }
+  .document { padding: 24px 19px; font-size: 15px; }
+}
