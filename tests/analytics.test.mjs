@@ -5,6 +5,7 @@ import vm from "node:vm";
 import ts from "typescript";
 
 const NOW = Date.parse("2026-09-27T12:00:00Z");
+const TEST_SITE_URL = new URL("https://site.example");
 
 function eventTarget() {
   const handlers = new Map();
@@ -63,8 +64,8 @@ function browser({ configured = true, readyState = "complete" } = {}) {
   const window = {
     ...eventTarget(),
     location: {
-      hostname: "oknoshchit.site", origin: "https://oknoshchit.site", pathname: "/",
-      href: "https://oknoshchit.site/?phone=secret#secret",
+      hostname: TEST_SITE_URL.hostname, origin: TEST_SITE_URL.origin, pathname: TEST_SITE_URL.pathname,
+      href: new URL("/?phone=secret#secret", TEST_SITE_URL).href,
     },
     localStorage: storage(), sessionStorage: storage(),
     setTimeout(callback, delay) { const id = ++sequence; timers.set(id, { callback, delay }); return id; },
@@ -204,7 +205,7 @@ test("page tracking omits queries, hashes and form recording, and deduplicates r
   page.analytics.trackPageView("/");
   page.analytics.trackPageView("/contacts/"); page.analytics.trackPageView("/contacts/");
   assert.deepEqual(page.calls.filter((call) => call[1] === "hit").map((call) => call[2]), [
-    "https://oknoshchit.site/", "https://oknoshchit.site/contacts/",
+    TEST_SITE_URL.href, new URL("/contacts/", TEST_SITE_URL).href,
   ]);
   assert.equal(JSON.stringify(page.calls).includes("secret"), false);
 });

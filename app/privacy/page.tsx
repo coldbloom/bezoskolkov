@@ -3,7 +3,7 @@ import { LegalContact, LegalDocument, LegalOperatorDetails } from "@/components/
 import { CookieSettingsButton } from "@/components/SiteAnalytics";
 import { legalProcessor } from "@/lib/legal";
 import { createPageMetadata } from "@/lib/seo";
-import { SITE_NAME, SITE_URL } from "@/lib/site";
+import { SITE_DOMAIN, SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const metadata = createPageMetadata({
   title: "Политика обработки персональных данных",
@@ -16,7 +16,7 @@ export default function PrivacyPage() {
     <LegalDocument title="Политика обработки персональных данных" path="/privacy/">
       <p>
         Эта Политика описывает обработку персональных данных посетителей сайта {" "}
-        <a href={SITE_URL}>{SITE_URL.replace(/^https?:\/\//, "")}</a>, обратившихся за подбором
+        <a href={SITE_URL}>{SITE_DOMAIN}</a>, обратившихся за подбором
         и монтажом защитной плёнки для окон под обозначением «{SITE_NAME}».
         Обозначение компании используется для представления услуг; сведения об операторе приведены ниже.
       </p>

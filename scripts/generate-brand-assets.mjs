@@ -1,5 +1,12 @@
 import { readFile, writeFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import nextEnv from "@next/env";
 import sharp from "sharp";
+
+nextEnv.loadEnvConfig(fileURLToPath(new URL("../", import.meta.url)), process.argv.includes("--development"));
+// Import after loading .env* so the image and Next.js use the same site address.
+const { SITE_DOMAIN } = await import("../lib/site-url.mjs");
+const domainText = SITE_DOMAIN.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
 // app/icon.svg is the single logo source for the UI, favicon and social preview.
 const icon = await readFile(new URL("../app/icon.svg", import.meta.url));
@@ -7,7 +14,7 @@ const socialTemplate = await readFile(new URL("../assets/og-image.svg", import.m
 const socialSvg = socialTemplate.replace(
   'href="../app/icon.svg"',
   `href="data:image/svg+xml;base64,${icon.toString("base64")}"`,
-);
+).replaceAll("{{SITE_DOMAIN}}", domainText);
 await sharp(Buffer.from(socialSvg))
   .png({ palette: true })
   .toFile(new URL("../public/og-image.png", import.meta.url).pathname);

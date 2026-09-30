@@ -26,9 +26,9 @@
 
 **Description:** Установка защитной противоосколочной плёнки на окна квартир, домов, офисов и витрин на Юге России. Подбор под остекление, расчёт стоимости по фото и размерам.
 
-**Canonical:** `https://oknoshchit.site/`
+**Canonical:** корень сайта из `NEXT_PUBLIC_SITE_URL` с завершающим `/`.
 
-`og:title`, `twitter:title`, `og:description`, `twitter:description` используют те же тексты. `og:url` совпадает с canonical. Изображение превью — `https://oknoshchit.site/og-image.png`, 1200 × 630.
+`og:title`, `twitter:title`, `og:description`, `twitter:description` используют те же тексты. `og:url` совпадает с canonical. Изображение превью — `/og-image.png` на домене из `NEXT_PUBLIC_SITE_URL`, 1200 × 630. Надпись с доменом на картинке также формируется из этой переменной при сборке.
 
 Источники: `homePageData` и helper в `lib/seo.ts`; описания регионов — `lib/regions.ts`. Главная и её дубль получают одинаковые данные через `getProtectionPageData`.
 

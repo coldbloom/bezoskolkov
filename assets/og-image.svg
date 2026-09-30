@@ -9,6 +9,6 @@
     <text x="68" y="412" fill="#fff" font-size="64" font-weight="700">Защитная плёнка</text>
     <text x="68" y="490" fill="#fff" font-size="64" font-weight="700">для ваших окон.</text>
     <text x="72" y="574" fill="#aeb3a8" font-size="23">Подбор и монтаж на Юге России</text>
-    <text x="1128" y="574" text-anchor="end" fill="#f2d30c" font-size="23">oknoshchit.site</text>
+    <text x="1128" y="574" text-anchor="end" fill="#f2d30c" font-size="23">{{SITE_DOMAIN}}</text>
   </g>
 </svg>

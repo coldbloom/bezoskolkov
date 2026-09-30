@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import { readFile, stat } from "node:fs/promises";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
+import nextEnv from "@next/env";
+
+nextEnv.loadEnvConfig(fileURLToPath(new URL("../", import.meta.url)));
+const { SITE_URL, SITE_DOMAIN } = await import("../lib/site-url.mjs");
 
 const output = new URL("../out/", import.meta.url);
 
@@ -120,6 +125,7 @@ const robots = await exportedFile("robots.txt");
 const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => new URL(match[1]));
 const siteUrl = urls[0]?.origin;
 
+assert.equal(siteUrl, SITE_URL, "Exported site address must match NEXT_PUBLIC_SITE_URL at build time");
 assert.equal(urls.length, 10, "Sitemap must contain all ten canonical public pages");
 assert.equal(new Set(urls.map((url) => url.href)).size, urls.length, "Sitemap URLs must be unique");
 assert.equal(urls[0].pathname, "/", "The homepage must be the first sitemap URL");
@@ -149,9 +155,16 @@ for (const url of urls) {
   assert.ok(!html.includes("/_next/image?"), `Runtime image optimization found: ${url.href}`);
   assert.ok(!html.includes("/title.png") && !html.includes("/example.png"), `Unoptimized image found: ${url.href}`);
   assert.ok(html.includes("ОКНО ЩИТ"), `New brand is missing: ${url.href}`);
-  assert.ok(!/Без Осколков|БЕЗ ОСКОЛКОВ|bezoskolkov\.ru/.test(html), `Old brand found: ${url.href}`);
+  assert.ok(!/Без Осколков|БЕЗ ОСКОЛКОВ|bezoskolkov\.ru|oknoshchit\.site/.test(html), `Old brand or domain found: ${url.href}`);
   assert.ok(html.includes('href="/privacy/"') && html.includes('href="/personal-data-consent/"'), `Legal links missing: ${url.href}`);
   assert.ok(!/<(?:script|img)[^>]+src="https?:\/\/(?:mc|mc\.webvisor)\.yandex\./.test(html), `Unconditional analytics request found: ${url.href}`);
+}
+
+for (const path of ["privacy/", "personal-data-consent/"]) {
+  const html = await exportedFile(`${path}index.html`);
+  const siteLink = [...html.matchAll(/<a\b([^>]*)>([^<]*)<\/a>/gi)]
+    .some(([, tag, label]) => attributes(tag).href === SITE_URL && decodeHtml(label) === SITE_DOMAIN);
+  assert.ok(siteLink, `Configured site domain and link must be present in static HTML: ${path}`);
 }
 
 const home = await exportedFile("index.html");

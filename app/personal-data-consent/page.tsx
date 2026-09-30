@@ -2,7 +2,7 @@ import Link from "@/components/NavigationLink";
 import { LegalContact, LegalDocument, LegalOperatorDetails } from "@/components/LegalDocument/LegalDocument";
 import { LEGAL_VERSION, legalProcessor } from "@/lib/legal";
 import { createPageMetadata } from "@/lib/seo";
-import { SITE_NAME, SITE_URL } from "@/lib/site";
+import { SITE_DOMAIN, SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const metadata = createPageMetadata({
   title: "Согласие на обработку персональных данных",
@@ -15,7 +15,7 @@ export default function PersonalDataConsentPage() {
     <LegalDocument title="Согласие на обработку персональных данных" path="/personal-data-consent/">
       <p>
         Проставляя отдельную отметку «Даю согласие на обработку персональных данных» и отправляя форму
-        на сайте {SITE_URL.replace(/^https?:\/\//, "")}, я свободно, своей волей и в своём интересе
+        на сайте <a href={SITE_URL}>{SITE_DOMAIN}</a>, я свободно, своей волей и в своём интересе
         разрешаю указанному ниже оператору обработку данных моего обращения в «{SITE_NAME}».
         Посещение этой страницы само по себе не означает согласия.
       </p>
