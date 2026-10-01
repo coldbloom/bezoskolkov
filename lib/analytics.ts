@@ -3,7 +3,7 @@ import { hasAnalyticsConsent } from "@/lib/analytics-consent";
 // Replace only this value with your counter ID. 000111222 is a disabled placeholder.
 export const YANDEX_METRIKA_ID = Number("000111222");
 const PLACEHOLDER_COUNTER_ID = 111222;
-const SCRIPT_ID = "oknoshchit-yandex-metrika";
+const SCRIPT_ID = "oknoshield-yandex-metrika";
 type GoalParams = Record<string, string | number | boolean>;
 type MetrikaCommand = "init" | "hit" | "reachGoal" | "destruct";
 type MetrikaArguments = [number, MetrikaCommand, ...unknown[]];

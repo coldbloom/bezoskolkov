@@ -1,8 +1,8 @@
-export const ANALYTICS_CONSENT_KEY = "oknoshchit:analytics-consent";
+export const ANALYTICS_CONSENT_KEY = "oknoshield:analytics-consent";
 export const ANALYTICS_CONSENT_VERSION = 1;
 export const ANALYTICS_CONSENT_MAX_AGE = 180 * 24 * 60 * 60 * 1000;
-export const COOKIE_SETTINGS_EVENT = "oknoshchit:cookie-settings";
-const CONSENT_CHANGE_EVENT = "oknoshchit:analytics-consent-change";
+export const COOKIE_SETTINGS_EVENT = "oknoshield:cookie-settings";
+const CONSENT_CHANGE_EVENT = "oknoshield:analytics-consent-change";
 
 export type AnalyticsConsent = "accepted" | "declined";
 export type ConsentSnapshot = AnalyticsConsent | "pending" | null;

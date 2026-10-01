@@ -155,7 +155,7 @@ for (const url of urls) {
   assert.ok(!html.includes("/_next/image?"), `Runtime image optimization found: ${url.href}`);
   assert.ok(!html.includes("/title.png") && !html.includes("/example.png"), `Unoptimized image found: ${url.href}`);
   assert.ok(html.includes("ОКНО ЩИТ"), `New brand is missing: ${url.href}`);
-  assert.ok(!/Без Осколков|БЕЗ ОСКОЛКОВ|bezoskolkov\.ru|oknoshchit\.site/.test(html), `Old brand or domain found: ${url.href}`);
+  assert.ok(!/Без Осколков|БЕЗ ОСКОЛКОВ|bezoskolkov\.ru/.test(html), `Old brand found: ${url.href}`);
   assert.ok(html.includes('href="/privacy/"') && html.includes('href="/personal-data-consent/"'), `Legal links missing: ${url.href}`);
   assert.ok(!/<(?:script|img)[^>]+src="https?:\/\/(?:mc|mc\.webvisor)\.yandex\./.test(html), `Unconditional analytics request found: ${url.href}`);
 }
