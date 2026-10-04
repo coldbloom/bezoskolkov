@@ -10,7 +10,7 @@ export function LegalContact() {
 
   return (
     <>
-      <a href={phoneHref(phone)}>{formatPhone(phone)}</a>
+      <a href={phoneHref(phone)} data-call-tracking-id="legal_contact">{formatPhone(phone)}</a>
       {legalOperator.email && <> или <a href={`mailto:${legalOperator.email}`}>{legalOperator.email}</a></>}
     </>
   );

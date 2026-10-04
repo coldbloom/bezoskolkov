@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { DEFAULT_PHONE, SITE_NAME, SITE_URL } from "@/lib/site";
 import { JsonLd } from "@/components/JsonLd";
 import { SiteAnalytics } from "@/components/SiteAnalytics";
+import { PhoneClickTracking } from "@/components/PhoneClickTracking/PhoneClickTracking";
 import { getPageTitle, homePageData } from "@/lib/seo";
 import "./globals.css";
 
@@ -61,6 +62,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <JsonLd data={globalJsonLd} />
         {children}
         <SiteAnalytics />
+        <PhoneClickTracking />
       </body>
     </html>
   );

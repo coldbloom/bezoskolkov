@@ -11,7 +11,7 @@ export function QuickContact({ phone }: { phone: string }) {
       <a href={MAX_URL} className={`${styles.link} ${styles.max}`} target="_blank" rel="noopener noreferrer" aria-label="Написать в Max" title="Написать в Max" data-analytics-goal="social_click" data-network="max" data-cta-position="header">
         <img src="/max-icon.svg" alt="" width={24} height={24} loading="eager" aria-hidden="true" />
       </a>
-      <a href={phoneHref(phone)} className={`${styles.link} ${styles.phone}`} aria-label={`Позвонить ${formatPhone(phone)}`} title={`Позвонить ${formatPhone(phone)}`} data-analytics-goal="phone_click" data-cta-position="header">
+      <a href={phoneHref(phone)} className={`${styles.link} ${styles.phone}`} aria-label={`Позвонить ${formatPhone(phone)}`} title={`Позвонить ${formatPhone(phone)}`} data-call-tracking-id="header" data-analytics-goal="phone_click" data-cta-position="header">
         <img src="/phone-icon.svg" alt="" width={18} height={18} loading="eager" aria-hidden="true" />
         <span>{formatPhone(phone)}</span>
       </a>

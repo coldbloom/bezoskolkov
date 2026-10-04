@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element -- Responsive WebP files are generated ahead of the static export. */
 import Link from "@/components/NavigationLink";
 import type { Region } from "@/lib/regions";
 import { localRegions, regionHref, regions } from "@/lib/regions";
@@ -14,6 +13,7 @@ import { ShockwaveFlow } from "@/components/ShockwaveFlow";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import styles from "./ProtectionPage.module.scss";
+import { ResponsiveImage } from "@/components/ResponsiveImage";
 
 const benefits = [
   { icon: FragmentsIcon, number: "01", title: "Удерживает осколки", text: "После разрушения плёнка помогает сохранить фрагменты стекла связанными между собой." },
@@ -134,23 +134,18 @@ export function ProtectionPage({ region }: ProtectionPageProps) {
               </p>
               <div className="hero-actions">
                 <ContactModalTrigger className="button button-primary" regionName={regionName} phone={phone} position="hero">Рассчитать стоимость <ArrowIcon /></ContactModalTrigger>
-                <a className="phone-link" href={phoneHref(phone)} data-analytics-goal="phone_click" data-cta-position="hero"><PhoneIcon /><span><small>Консультация</small>{formatPhone(phone)}</span></a>
+                <a className="phone-link" href={phoneHref(phone)} data-call-tracking-id="hero" data-analytics-goal="phone_click" data-cta-position="hero"><PhoneIcon /><span><small>Консультация</small>{formatPhone(phone)}</span></a>
               </div>
               <div className="hero-meta">
                 {heroMeta.map((item) => <span key={item}>{item}</span>)}
               </div>
             </div>
             <div className="hero-visual">
-              <img
-                src="/hero-1536.webp"
-                srcSet="/hero-768.webp 768w, /hero-1280.webp 1280w, /hero-1536.webp 1536w"
+              <ResponsiveImage
+                name="hero"
                 alt="Профессиональная установка защитной плёнки и пример удержания разрушенного стекла"
-                width={1536}
-                height={1024}
-                loading="eager"
-                fetchPriority="high"
-                decoding="async"
-                sizes="(max-width: 900px) calc(100vw - 30px), (max-width: 1304px) 52vw, 645px"
+                priority
+                sizes="(max-width: 620px) 100vw, (max-width: 900px) calc(100vw - 40px), (max-width: 1100px) calc((100vw - 40px) * 0.53), (max-width: 1304px) calc((100vw - 64px) * 0.52), 645px"
               />
             </div>
           </div>
@@ -165,15 +160,10 @@ export function ProtectionPage({ region }: ProtectionPageProps) {
             </div>
             <figure className="comparison-figure">
               <div className="comparison-image">
-                <img
-                  src="/comparison-1536.webp"
-                  srcSet="/comparison-768.webp 768w, /comparison-1280.webp 1280w, /comparison-1536.webp 1536w"
+                <ResponsiveImage
+                  name="comparison"
                   alt="Сравнение разрушения окна без защитной плёнки и с защитной плёнкой"
-                  width={1536}
-                  height={1024}
-                  loading="lazy"
-                  decoding="async"
-                  sizes="(max-width: 900px) 100vw, 1180px"
+                  sizes="(max-width: 620px) 100vw, (max-width: 1100px) calc(100vw - 40px), (max-width: 1304px) calc(100vw - 64px), 1240px"
                 />
               </div>
               <figcaption>
@@ -286,7 +276,7 @@ export function ProtectionPage({ region }: ProtectionPageProps) {
 
         <section className="estimate section" id="estimate">
           <div className="shell estimate-shell">
-            <div className="estimate-copy"><span className="section-code">БЕСПЛАТНЫЙ ПРЕДВАРИТЕЛЬНЫЙ РАСЧЁТ</span><h2>Сделайте остекление<br /><em>безопаснее.</em></h2><p>Оставьте заявку или позвоните. Фотографии и примерных размеров окон достаточно, чтобы начать подбор.</p><a href={phoneHref(phone)}><PhoneIcon /><span><small>Позвонить специалисту</small>{formatPhone(phone)}</span></a></div>
+            <div className="estimate-copy"><span className="section-code">БЕСПЛАТНЫЙ ПРЕДВАРИТЕЛЬНЫЙ РАСЧЁТ</span><h2>Сделайте остекление<br /><em>безопаснее.</em></h2><p>Оставьте заявку или позвоните. Фотографии и примерных размеров окон достаточно, чтобы начать подбор.</p><a href={phoneHref(phone)} data-call-tracking-id="estimate"><PhoneIcon /><span><small>Позвонить специалисту</small>{formatPhone(phone)}</span></a></div>
             <LeadForm regionName={regionName} phone={formatPhone(phone)} />
           </div>
         </section>

@@ -72,7 +72,10 @@ export function LeadFormClient({ regionName, phone, legalConfigured, consentVers
       const response = await fetch(feedbackEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(createLeadPayload(values, regionName, consentVersion)),
+        body: JSON.stringify(createLeadPayload(values, regionName, consentVersion, {
+          page: window.location.pathname,
+          formPosition: variant,
+        })),
         credentials: "omit",
         mode: "cors",
         referrerPolicy: "no-referrer",
@@ -119,8 +122,8 @@ export function LeadFormClient({ regionName, phone, legalConfigured, consentVers
 
   return (
     <form className={`${styles.form} ${variant === "modal" ? styles.inModal : ""}`} method="post" onSubmit={handleSubmit} noValidate aria-busy={status === "pending"}>
-      {!available && status !== "error" && <p className={styles.unavailable}>Онлайн-заявки пока недоступны. Для расчёта позвоните: <a href={telephone}>{phone}</a>.</p>}
-      {available && <noscript><p className={styles.unavailable}>Для отправки формы включите JavaScript или позвоните: <a href={telephone}>{phone}</a>.</p></noscript>}
+      {!available && status !== "error" && <p className={styles.unavailable}>Онлайн-заявки пока недоступны. Для расчёта позвоните: <a href={telephone} data-call-tracking-id={`${variant}_unavailable`}>{phone}</a>.</p>}
+      {available && <noscript><p className={styles.unavailable}>Для отправки формы включите JavaScript или позвоните: <a href={telephone} data-call-tracking-id={`${variant}_noscript`}>{phone}</a>.</p></noscript>}
       <fieldset className={styles.fields} disabled={!hydrated || status === "pending"}>
         <legend className={styles.visuallyHidden}>Данные для обратного звонка</legend>
         <label className={styles.field} htmlFor={`${id}-name`}>
@@ -155,7 +158,7 @@ export function LeadFormClient({ regionName, phone, legalConfigured, consentVers
           {status === "pending" ? "Отправляем…" : "Получить расчёт"} <span aria-hidden="true">↗</span>
         </button>
       </fieldset>
-      {status === "error" && <div className={styles.submitError} role="alert" tabIndex={-1} ref={feedbackRef}>{submitError} <a href={telephone}>{phone}</a></div>}
+      {status === "error" && <div className={styles.submitError} role="alert" tabIndex={-1} ref={feedbackRef}>{submitError} <a href={telephone} data-call-tracking-id={`${variant}_error`}>{phone}</a></div>}
       <p className={styles.note}>Согласие на заявку не включает рекламные рассылки и необязательную аналитику.</p>
     </form>
   );

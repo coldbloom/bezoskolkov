@@ -4,8 +4,10 @@ import { test } from "node:test";
 import vm from "node:vm";
 import ts from "typescript";
 
-const NOW = Date.parse("2026-09-27T12:00:00Z");
-const TEST_SITE_URL = new URL("https://site.example");
+const COUNTER_ID = 123456789;
+const NOW = Date.parse("2026-10-04T12:00:00Z");
+const SITE_ORIGIN = "https://site.example";
+const SCRIPT_ID = "oknoshield-yandex-metrika-script";
 
 function eventTarget() {
   const handlers = new Map();
@@ -21,7 +23,6 @@ function eventTarget() {
         record.callback(event);
         if (record.once) this.removeEventListener(event.type, record.callback);
       }
-      return true;
     },
   };
 }
@@ -29,205 +30,289 @@ function eventTarget() {
 function storage() {
   const values = new Map();
   return {
-    get length() { return values.size; },
     getItem: (key) => values.get(key) ?? null,
     setItem: (key, value) => values.set(key, String(value)),
     removeItem: (key) => values.delete(key),
-    key: (index) => [...values.keys()][index] ?? null,
   };
 }
 
-function browser({ configured = true, readyState = "complete" } = {}) {
-  let now = NOW;
+function browser(options = {}) {
+  const { pathname = "/", readyState = "complete", idleCallback = true } = options;
+  const counterValue = Object.hasOwn(options, "counterValue") ? options.counterValue : String(COUNTER_ID);
   let sequence = 0;
   const timers = new Map();
   const idleCallbacks = new Map();
   const scripts = [];
   const requests = [];
-  const calls = [];
-  const cookies = new Map([["_ym_uid", "123"], ["essential", "yes"]]);
   const document = {
-    ...eventTarget(), readyState, title: "ОКНО ЩИТ",
-    get cookie() { return [...cookies].map(([key, value]) => `${key}=${value}`).join("; "); },
-    set cookie(value) {
-      const [key, content] = value.split(";", 1)[0].split("=");
-      if (value.includes("Max-Age=0")) cookies.delete(key);
-      else cookies.set(key, content);
-    },
-    getElementById: (id) => scripts.find((script) => script.id === id),
+    ...eventTarget(),
+    readyState,
+    title: "ОКНО ЩИТ",
+    referrer: "https://referrer.example/search",
+    scripts,
+    getElementById: (id) => scripts.find((script) => script.id === id) ?? null,
     createElement(tag) {
       assert.equal(tag, "script");
-      return { remove() { const index = scripts.indexOf(this); if (index !== -1) scripts.splice(index, 1); } };
+      return {};
     },
     head: { appendChild(script) { scripts.push(script); requests.push(script.src); } },
   };
   const window = {
     ...eventTarget(),
-    location: {
-      hostname: TEST_SITE_URL.hostname, origin: TEST_SITE_URL.origin, pathname: TEST_SITE_URL.pathname,
-      href: new URL("/?phone=secret#secret", TEST_SITE_URL).href,
+    location: new URL(pathname, SITE_ORIGIN),
+    localStorage: storage(),
+    sessionStorage: storage(),
+    setTimeout(callback, delay) {
+      const id = ++sequence;
+      timers.set(id, { callback, delay });
+      return id;
     },
-    localStorage: storage(), sessionStorage: storage(),
-    setTimeout(callback, delay) { const id = ++sequence; timers.set(id, { callback, delay }); return id; },
     clearTimeout: (id) => timers.delete(id),
-    requestIdleCallback(callback) { const id = ++sequence; idleCallbacks.set(id, callback); return id; },
-    cancelIdleCallback: (id) => idleCallbacks.delete(id),
   };
-  class TestDate extends Date { static now() { return now; } }
-  const context = vm.createContext({ window, document, Date: TestDate, Event, URL });
+  if (idleCallback) {
+    window.requestIdleCallback = (callback, options) => {
+      const id = ++sequence;
+      idleCallbacks.set(id, { callback, options });
+      return id;
+    };
+  }
+  class TestDate extends Date { static now() { return NOW; } }
+  const context = vm.createContext({
+    window, document, Date: TestDate, Event, URL,
+    process: { env: { NEXT_PUBLIC_YANDEX_METRIKA_ID: counterValue } },
+  });
   const modules = new Map();
   function loadModule(path) {
     if (modules.has(path)) return modules.get(path);
-    let source = readFileSync(`${path}.ts`, "utf8");
-    if (path === "lib/analytics" && configured) source = source.replace('Number("000111222")', "123456789");
+    const source = readFileSync(`${path}.ts`, "utf8");
     const code = ts.transpileModule(source, {
       compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
     }).outputText;
     const exports = {};
     modules.set(path, exports);
-    const require = (name) => loadModule(name.replace("@/", ""));
+    const require = (name) => {
+      assert.ok(name.startsWith("@/"), `Unexpected dependency: ${name}`);
+      return loadModule(name.replace("@/", ""));
+    };
     vm.runInContext(`(function (exports, require) { ${code}\n})`, context)(exports, require);
     return exports;
   }
+  const analytics = loadModule("lib/analytics");
+  const { getYandexMetrikaScript } = loadModule("lib/yandex-metrika");
   return {
-    window, document, cookies, timers, idleCallbacks, scripts, requests, calls,
-    consent: loadModule("lib/analytics-consent"), analytics: loadModule("lib/analytics"),
+    window, document, timers, idleCallbacks, scripts, requests, analytics,
+    getYandexMetrikaScript,
+    bootstrap(counterId = analytics.YANDEX_METRIKA_ID) {
+      vm.runInContext(getYandexMetrikaScript(counterId), context);
+    },
+    commands() {
+      return JSON.parse(JSON.stringify(Array.from(window.ym?.a ?? [], (args) => Array.from(args))));
+    },
+    navigate(pathname) {
+      window.location.href = new URL(pathname, SITE_ORIGIN).href;
+      analytics.trackPageView(window.location.pathname);
+    },
     flushIdle() {
-      for (const [id, callback] of [...idleCallbacks]) { idleCallbacks.delete(id); callback(); }
+      for (const [id, { callback }] of [...idleCallbacks]) {
+        idleCallbacks.delete(id);
+        callback();
+      }
     },
-    finishScript() {
-      window.ym = (...args) => calls.push(JSON.parse(JSON.stringify(args)));
-      scripts.at(-1)?.onload?.();
+    flushTimers() {
+      for (const [id, { callback }] of [...timers]) {
+        timers.delete(id);
+        callback();
+      }
     },
-    setNow(value) { now = value; },
   };
 }
 
-test("consent validates version, explicit choice and a bounded expiry", () => {
-  const { consent } = browser();
-  const valid = { version: consent.ANALYTICS_CONSENT_VERSION, choice: "accepted", updatedAt: NOW, expiresAt: NOW + consent.ANALYTICS_CONSENT_MAX_AGE };
-  const parse = (record, now = NOW) => consent.parseAnalyticsConsent(JSON.stringify(record), now);
-  assert.equal(parse(valid).choice, "accepted");
-  assert.equal(parse({ ...valid, choice: "declined" }).choice, "declined");
-  for (const record of [null, [], "accepted", {}, { ...valid, choice: true }, { ...valid, version: 0 },
-    { ...valid, updatedAt: NOW + 1 }, { ...valid, expiresAt: NOW }, { ...valid, expiresAt: valid.expiresAt + 1 },
-  ]) assert.equal(parse(record), null);
-  assert.equal(parse(valid, valid.expiresAt), null);
-  assert.equal(consent.parseAnalyticsConsent("invalid", NOW), null);
-  assert.equal(consent.getServerConsentSnapshot(), "pending");
-});
+test("the counter comes from the environment and invalid IDs cannot initialize analytics", () => {
+  const page = browser({ counterValue: "987654321" });
+  assert.equal(page.analytics.YANDEX_METRIKA_ID, 987654321);
+  assert.equal(page.analytics.isAnalyticsConfigured(), true);
+  page.bootstrap();
+  assert.equal(page.commands()[0][0], 987654321);
+  page.flushIdle();
+  assert.deepEqual(page.requests, ["https://mc.yandex.ru/metrika/tag.js?id=987654321"]);
 
-test("blocked storage writes keep the choice in memory for this page", () => {
-  const { consent, window } = browser();
-  window.localStorage.setItem = () => { throw new Error("Blocked storage"); };
-  consent.setAnalyticsConsent("accepted");
-  assert.equal(consent.hasAnalyticsConsent(), true);
-  consent.setAnalyticsConsent("declined");
-  assert.equal(consent.hasAnalyticsConsent(), false);
-});
-
-test("same-tab changes, cross-tab removal and expiry update subscriptions", () => {
-  const { consent, window, timers, setNow } = browser();
-  const snapshots = [];
-  const unsubscribe = consent.subscribeToAnalyticsConsent(() => snapshots.push(consent.getConsentSnapshot()));
-  consent.setAnalyticsConsent("accepted");
-  assert.deepEqual(snapshots, ["accepted"]);
-  assert.equal(timers.size, 1);
-  assert.ok([...timers.values()][0].delay <= 2_147_483_647);
-  window.localStorage.removeItem(consent.ANALYTICS_CONSENT_KEY);
-  window.dispatchEvent({ type: "storage", key: consent.ANALYTICS_CONSENT_KEY });
-  assert.equal(snapshots.at(-1), null);
-  assert.equal(timers.size, 0);
-  consent.setAnalyticsConsent("accepted");
-  setNow(NOW + consent.ANALYTICS_CONSENT_MAX_AGE);
-  [...timers.values()][0].callback();
-  assert.equal(snapshots.at(-1), null);
-  unsubscribe();
-  assert.equal(timers.size, 0);
-});
-
-test("unanswered, declined and placeholder consent never request Yandex", () => {
-  for (const choice of [null, "declined"]) {
-    const page = browser();
-    if (choice) page.consent.setAnalyticsConsent(choice);
-    page.analytics.startAnalytics(); page.flushIdle();
-    assert.deepEqual(page.requests, []);
-    assert.equal(page.window.ym, undefined);
+  for (const counterValue of [undefined, "", "0", "-1", "1.5", "0x12", "invalid", "9007199254740992"]) {
+    const invalid = browser({ counterValue });
+    assert.equal(invalid.analytics.isAnalyticsConfigured(), false, String(counterValue));
+    invalid.analytics.trackPageView("/");
+    invalid.analytics.trackSiteGoal("phone_click");
+    assert.deepEqual(invalid.requests, []);
+    assert.equal(invalid.window.ym, undefined);
   }
-  const page = browser({ configured: false });
-  page.consent.setAnalyticsConsent("accepted");
-  page.analytics.startAnalytics(); page.flushIdle();
-  assert.equal(page.analytics.isAnalyticsConfigured(), false);
-  assert.deepEqual(page.requests, []);
 });
 
-test("accepted real counter waits for page load and idle before requesting its library", () => {
-  const page = browser({ readyState: "loading" });
-  page.consent.setAnalyticsConsent("accepted"); page.analytics.startAnalytics();
-  assert.equal(page.idleCallbacks.size, 0);
+test("the inline script rejects invalid numbers before producing executable code", () => {
+  const { getYandexMetrikaScript } = browser();
+  for (const counterId of [0, -1, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1, "1;alert(1)"]) {
+    assert.throws(() => getYandexMetrikaScript(counterId), { name: "RangeError" });
+  }
+});
+
+test("initialization immediately queues the requested options and schedules the library once", () => {
+  const page = browser({ readyState: "loading", pathname: "/?campaign=autumn#details" });
+  page.bootstrap();
+  const commands = page.commands();
+  assert.equal(commands.length, 1);
+  assert.deepEqual(commands[0], [COUNTER_ID, "init", {
+    ssr: true,
+    webvisor: true,
+    clickmap: true,
+    ecommerce: "dataLayer",
+    referrer: page.document.referrer,
+    url: page.window.location.href,
+    accurateTrackBounce: true,
+    trackLinks: true,
+  }]);
+  assert.equal(page.window.ym.l, NOW);
+  assert.equal(page.window.__oknoshieldMetrika.counterId, COUNTER_ID);
   assert.deepEqual(page.requests, []);
+  assert.equal(page.idleCallbacks.size, 0);
+
+  page.bootstrap();
+  assert.equal(page.commands().filter((call) => call[1] === "init").length, 1);
+  page.document.readyState = "complete";
   page.window.dispatchEvent({ type: "load" });
   assert.equal(page.idleCallbacks.size, 1);
+  page.flushIdle();
+  assert.deepEqual(page.requests, [`https://mc.yandex.ru/metrika/tag.js?id=${COUNTER_ID}`]);
+  assert.equal(page.scripts[0].id, SCRIPT_ID);
+  assert.equal(page.scripts[0].async, true);
+  page.bootstrap();
+  page.flushIdle();
+  assert.equal(page.requests.length, 1);
+});
+
+test("legacy declined consent and unavailable storage do not gate initialization or goals", () => {
+  for (const storageBlocked of [false, true]) {
+    const page = browser();
+    page.window.localStorage.setItem("oknoshield:analytics-consent", JSON.stringify({
+      version: 1, choice: "declined", updatedAt: NOW, expiresAt: NOW + 86400000,
+    }));
+    if (storageBlocked) {
+      Object.defineProperty(page.window, "localStorage", {
+        get() { throw new Error("Browser storage is blocked"); },
+      });
+    }
+    page.bootstrap();
+    page.analytics.trackSiteGoal("phone_click", { position: "header" });
+    assert.deepEqual(page.requests, []);
+    assert.equal(page.commands()[0][1], "init");
+    assert.deepEqual(page.commands().at(-1), [COUNTER_ID, "reachGoal", "phone_click", {
+      position: "header", page: "/",
+    }]);
+    page.flushIdle();
+    assert.equal(page.requests.length, 1);
+  }
+});
+
+test("a script already present by ID or URL is not loaded a second time", () => {
+  for (const script of [
+    { id: SCRIPT_ID, src: "https://mc.yandex.ru/metrika/tag.js" },
+    { id: "existing-metrika", src: `https://mc.yandex.ru/metrika/tag.js?id=${COUNTER_ID}` },
+  ]) {
+    const page = browser();
+    page.scripts.push(script);
+    page.bootstrap();
+    page.flushIdle();
+    assert.deepEqual(page.requests, []);
+    assert.equal(page.commands().filter((call) => call[1] === "init").length, 1);
+  }
+});
+
+test("the initial page is counted by init and SPA routes are counted once while the script is queued", () => {
+  const page = browser({ pathname: "/?campaign=autumn#details" });
+  page.bootstrap();
+  page.analytics.trackPageView("/");
+  page.navigate("/contacts");
+  page.navigate("/contacts/");
+  page.navigate("/company/");
+  page.navigate("/contacts/");
+  const hits = page.commands().filter((call) => call[1] === "hit");
+  assert.deepEqual(hits.map((call) => new URL(call[2]).pathname.replace(/\/$/, "")), [
+    "/contacts", "/company", "/contacts",
+  ]);
+  assert.equal(hits[0][3].title, page.document.title);
+  assert.equal(hits[0][3].referer, `${SITE_ORIGIN}/?campaign=autumn#details`);
+  assert.equal(hits[1][3].referer, `${SITE_ORIGIN}/contacts`);
+  assert.equal(page.commands().filter((call) => call[1] === "init").length, 1);
   assert.deepEqual(page.requests, []);
   page.flushIdle();
   assert.equal(page.requests.length, 1);
-  assert.equal(page.scripts[0].async, true);
-  assert.equal(page.window.ym.a, undefined, "Do not queue initialization before the library loads");
 });
 
-test("revocation cancels pending work and prevents late initialization", () => {
-  for (const readyState of ["loading", "complete"]) {
-    const page = browser({ readyState });
-    page.consent.setAnalyticsConsent("accepted");
-    const cleanup = page.analytics.startAnalytics();
-    page.consent.setAnalyticsConsent("declined"); cleanup();
-    page.window.dispatchEvent({ type: "load" }); page.flushIdle();
+test("page views and goals are ignored until the configured counter has initialized", () => {
+  const page = browser();
+  page.analytics.trackPageView("/contacts/");
+  page.analytics.trackSiteGoal("phone_click");
+  assert.deepEqual(page.commands(), []);
+
+  page.bootstrap(COUNTER_ID + 1);
+  const count = page.commands().length;
+  page.analytics.trackPageView("/contacts/");
+  page.analytics.trackSiteGoal("phone_click");
+  assert.equal(page.commands().length, count, "Do not send events to a different counter");
+});
+
+test("home, region and inner pages queue goals immediately but wait for load and idle to fetch", () => {
+  for (const pathname of ["/", "/regions/donetsk", "/regions/donetsk/", "/contacts/"]) {
+    const page = browser({ pathname, readyState: "loading" });
+    page.bootstrap();
+    page.analytics.trackSiteGoal("phone_click", { position: "hero" });
+    assert.deepEqual(page.commands().map((call) => call[1]), ["init", "reachGoal"]);
     assert.deepEqual(page.requests, []);
+    assert.equal(page.idleCallbacks.size, 0);
+
+    page.document.readyState = "complete";
+    page.window.dispatchEvent({ type: "load" });
+    assert.equal(page.idleCallbacks.size, 1);
+    assert.equal([...page.idleCallbacks.values()][0].options.timeout, 2000);
+    assert.deepEqual(page.requests, []);
+    page.flushIdle();
+    page.window.dispatchEvent({ type: "load" });
+    page.flushIdle();
+    assert.equal(page.requests.length, 1);
   }
-  const page = browser();
-  page.consent.setAnalyticsConsent("accepted");
-  const cleanup = page.analytics.startAnalytics(); page.flushIdle();
-  const lateLoad = page.scripts[0].onload;
-  page.consent.setAnalyticsConsent("declined"); cleanup();
-  page.window.ym = (...args) => page.calls.push(args); lateLoad();
-  assert.deepEqual(page.calls, []);
-  assert.equal(page.scripts.length, 0);
 });
 
-test("page tracking omits queries, hashes and form recording, and deduplicates routes", () => {
-  const page = browser();
-  page.consent.setAnalyticsConsent("accepted"); page.analytics.startAnalytics();
-  page.flushIdle(); page.finishScript();
-  const init = page.calls.find((call) => call[1] === "init")[2];
-  assert.equal(init.defer, true);
-  for (const key of ["webvisor", "clickmap", "trackLinks"]) assert.equal(init[key], false);
-  assert.equal(init.disableYtm, true);
+test("an already loaded homepage schedules immediately and supports browsers without idle callbacks", () => {
+  for (const idleCallback of [true, false]) {
+    const page = browser({ idleCallback });
+    page.bootstrap();
+    assert.equal(page.commands()[0][1], "init");
+    assert.deepEqual(page.requests, []);
+    if (idleCallback) {
+      assert.equal(page.idleCallbacks.size, 1);
+      page.flushIdle();
+    } else {
+      assert.equal(page.timers.size, 1);
+      assert.equal([...page.timers.values()][0].delay, 0);
+      page.flushTimers();
+    }
+    assert.equal(page.requests.length, 1);
+  }
+});
+
+test("navigation before page load retains the original visit and queues the new route and goal", () => {
+  const page = browser({ readyState: "loading", pathname: "/?campaign=autumn" });
+  page.bootstrap();
   page.analytics.trackPageView("/");
-  page.analytics.trackPageView("/contacts/"); page.analytics.trackPageView("/contacts/");
-  assert.deepEqual(page.calls.filter((call) => call[1] === "hit").map((call) => call[2]), [
-    TEST_SITE_URL.href, new URL("/contacts/", TEST_SITE_URL).href,
-  ]);
-  assert.equal(JSON.stringify(page.calls).includes("secret"), false);
-});
+  page.navigate("/contacts/");
+  page.analytics.trackSiteGoal("phone_click", { position: "contacts" });
+  assert.deepEqual(page.requests, []);
+  assert.deepEqual(page.commands().map((call) => call[1]), ["init", "hit", "reachGoal"]);
+  assert.equal(page.commands()[0][2].url, `${SITE_ORIGIN}/?campaign=autumn`);
+  assert.equal(page.commands()[1][2], `${SITE_ORIGIN}/contacts/`);
+  assert.equal(page.commands()[1][3].referer, `${SITE_ORIGIN}/?campaign=autumn`);
+  assert.equal(page.commands()[2][3].page, "/contacts/");
 
-test("withdrawal destroys the counter, removes analytics storage and blocks later goals", () => {
-  const page = browser();
-  page.window.localStorage.setItem("_ym_uid", "123");
-  page.window.sessionStorage.setItem("_ym_retryReqs", "[]");
-  page.window.localStorage.setItem("essential", "keep");
-  page.consent.setAnalyticsConsent("accepted");
-  const cleanup = page.analytics.startAnalytics(); page.flushIdle(); page.finishScript();
-  page.analytics.trackSiteGoal("phone_click", { position: "header" });
-  assert.equal(page.calls.at(-1)[1], "reachGoal");
-  page.consent.setAnalyticsConsent("declined"); cleanup();
-  assert.equal(page.calls.at(-1)[1], "destruct");
-  const count = page.calls.length;
-  page.analytics.trackSiteGoal("phone_click"); page.analytics.trackPageView("/company/");
-  assert.equal(page.calls.length, count);
-  assert.equal(page.cookies.has("_ym_uid"), false);
-  assert.equal(page.cookies.get("essential"), "yes");
-  assert.equal(page.window.localStorage.getItem("_ym_uid"), null);
-  assert.equal(page.window.sessionStorage.getItem("_ym_retryReqs"), null);
-  assert.equal(page.window.localStorage.getItem("essential"), "keep");
-  assert.equal(page.consent.getConsentSnapshot(), "declined");
+  page.document.readyState = "complete";
+  page.window.dispatchEvent({ type: "load" });
+  page.flushIdle();
+  assert.equal(page.requests.length, 1);
+  assert.deepEqual(page.commands().map((call) => call[1]), ["init", "hit", "reachGoal"]);
 });

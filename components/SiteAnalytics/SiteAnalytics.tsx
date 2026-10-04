@@ -1,100 +1,31 @@
-"use client";
-
-import Link from "@/components/NavigationLink";
-import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import {
-  COOKIE_SETTINGS_EVENT,
-  getConsentSnapshot,
-  getServerConsentSnapshot,
-  setAnalyticsConsent,
-  subscribeToAnalyticsConsent,
-  type AnalyticsConsent,
-} from "@/lib/analytics-consent";
-import { startAnalytics, stopAnalytics, trackPageView, trackSiteGoal } from "@/lib/analytics";
-import styles from "./SiteAnalytics.module.scss";
+import Script from "next/script";
+import { isAnalyticsConfigured, YANDEX_METRIKA_ID } from "@/lib/analytics";
+import { getYandexMetrikaScript } from "@/lib/yandex-metrika";
+import { AnalyticsEvents } from "./AnalyticsEvents";
 
 export function SiteAnalytics() {
-  const pathname = usePathname();
-  const consent = useSyncExternalStore(
-    subscribeToAnalyticsConsent,
-    getConsentSnapshot,
-    getServerConsentSnapshot,
-  );
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const bannerRef = useRef<HTMLElement>(null);
-  const returnFocusRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    const openSettings = () => {
-      returnFocusRef.current = document.activeElement instanceof HTMLElement
-        ? document.activeElement : null;
-      setSettingsOpen(true);
-      window.requestAnimationFrame(() => bannerRef.current?.focus());
-    };
-    window.addEventListener(COOKIE_SETTINGS_EVENT, openSettings);
-    return () => window.removeEventListener(COOKIE_SETTINGS_EVENT, openSettings);
-  }, []);
-
-  useEffect(() => {
-    if (consent === "pending") return;
-    if (consent !== "accepted") {
-      stopAnalytics();
-      return;
-    }
-    return startAnalytics();
-  }, [consent]);
-
-  useEffect(() => {
-    if (consent === "accepted") trackPageView(pathname);
-  }, [consent, pathname]);
-
-  useEffect(() => {
-    const handleContactClick = (event: MouseEvent) => {
-      if (!(event.target instanceof Element)) return;
-      const link = event.target.closest<HTMLElement>("[data-analytics-goal]");
-      const goal = link?.dataset.analyticsGoal;
-      if (!goal || !/^[a-z0-9_]{1,64}$/.test(goal)) return;
-      trackSiteGoal(goal, {
-        position: link?.dataset.ctaPosition ?? "content",
-        network: link?.dataset.network ?? "phone",
-      });
-    };
-    document.addEventListener("click", handleContactClick);
-    return () => document.removeEventListener("click", handleContactClick);
-  }, []);
-
-  const choose = (choice: AnalyticsConsent) => {
-    setAnalyticsConsent(choice);
-    if (choice === "declined") stopAnalytics();
-    setSettingsOpen(false);
-    returnFocusRef.current?.focus();
-    returnFocusRef.current = null;
-  };
-
-  if (consent === "pending" || (consent !== null && !settingsOpen)) return null;
+  if (!isAnalyticsConfigured()) {
+    throw new Error("Укажите положительный целый NEXT_PUBLIC_YANDEX_METRIKA_ID в .env перед сборкой сайта.");
+  }
 
   return (
-    <section
-      ref={bannerRef}
-      className={styles.banner}
-      aria-label="Настройки cookie и статистики"
-      aria-describedby="analytics-consent-description"
-      tabIndex={-1}
-    >
-      <p id="analytics-consent-description" className={styles.text}>
-        Мы используем необязательные cookie и Яндекс Метрику для статистики посещений.
-        Они включатся только с вашего согласия. Подробнее в{" "}
-        <Link href="/privacy/" prefetch={false} aria-label="Политика обработки персональных данных">политике</Link>.
-      </p>
-      <div className={styles.actions}>
-        <button type="button" className={styles.decline} onClick={() => choose("declined")}>
-          Отклонить
-        </button>
-        <button type="button" className={styles.accept} onClick={() => choose("accepted")}>
-          Принять
-        </button>
-      </div>
-    </section>
+    <>
+      <Script id="yandex-metrika" strategy="afterInteractive">
+        {getYandexMetrikaScript(YANDEX_METRIKA_ID)}
+      </Script>
+      <AnalyticsEvents />
+      <noscript>
+        <div>
+          {/* eslint-disable-next-line @next/next/no-img-element -- Metrika's fallback pixel works without JavaScript. */}
+          <img
+            src={`https://mc.yandex.ru/watch/${YANDEX_METRIKA_ID}`}
+            width={1}
+            height={1}
+            style={{ position: "absolute", left: -9999 }}
+            alt=""
+          />
+        </div>
+      </noscript>
+    </>
   );
 }

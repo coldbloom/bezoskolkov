@@ -8,6 +8,7 @@ export function MobileCall({ phone }: { phone: string }) {
       className={styles.root}
       href={phoneHref(phone)}
       aria-label={`Позвонить ${formatPhone(phone)}`}
+      data-call-tracking-id="mobile_fixed"
       data-analytics-goal="phone_click"
       data-cta-position="mobile_fixed"
     >

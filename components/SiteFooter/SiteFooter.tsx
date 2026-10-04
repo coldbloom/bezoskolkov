@@ -2,7 +2,6 @@
 import Link from "@/components/NavigationLink";
 import { localRegions, regionHref } from "@/lib/regions";
 import { formatPhone, phoneHref, SITE_NAME, TELEGRAM_URL, MAX_URL } from "@/lib/site";
-import { CookieSettingsButton } from "@/components/SiteAnalytics";
 import { CodeCake } from "@/components/CodeCake";
 import { BrandMark } from "@/components/BrandMark";
 import styles from "./SiteFooter.module.scss";
@@ -27,7 +26,7 @@ export function SiteFooter({ phone }: { phone: string }) {
         </div>
         <div className="footer-contact">
           <p className="footer-title">Консультация</p>
-          <a className="footer-phone" href={phoneHref(phone)} data-analytics-goal="phone_click" data-cta-position="footer">{formatPhone(phone)}</a>
+          <a className="footer-phone" href={phoneHref(phone)} data-call-tracking-id="footer" data-analytics-goal="phone_click" data-cta-position="footer">{formatPhone(phone)}</a>
           <div className="footer-messengers">
             <a className="footer-messenger" href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Написать в Telegram" data-analytics-goal="social_click" data-network="telegram" data-cta-position="footer">
               <span className="messenger-icon messenger-icon-telegram" aria-hidden="true"><img src="/tg-icon.svg" alt="" width={22} height={19} /></span>
@@ -45,7 +44,7 @@ export function SiteFooter({ phone }: { phone: string }) {
       <nav className="shell footer-legal" aria-label="Правовая информация">
         <Link href="/privacy/" prefetch={false}>Политика обработки персональных данных</Link>
         <Link href="/personal-data-consent/" prefetch={false}>Согласие на обработку данных</Link>
-        <CookieSettingsButton />
+        <Link href="/privacy/#cookies" prefetch={false}>Cookie и статистика</Link>
       </nav>
       <div className="shell footer-bottom">
         <span>© {new Date().getFullYear()} {SITE_NAME}</span>

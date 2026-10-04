@@ -1,4 +1,4 @@
-import Image from 'next/image';
+/* eslint-disable @next/next/no-img-element -- A static SVG needs no client image runtime. */
 
 export const CodeCake = () => {
   return (
@@ -8,7 +8,7 @@ export const CodeCake = () => {
       rel="noopener"
       aria-label="Ссылка на контакт разработчика (откроется в новой вкладке)"
     >
-      <Image src="/codecake.svg" alt="Разработано в CODECAKE" width={235} height={37} />
+      <img src="/codecake.svg" alt="Разработано в CODECAKE" width={235} height={37} loading="lazy" decoding="async" />
     </a>
   );
 };

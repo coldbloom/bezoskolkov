@@ -60,7 +60,7 @@ export function ContactModal({ onClose, ...formProps }: ContactModalProps) {
         </div>
         <p className={styles.description} id={`${id}-description`}>Оставьте телефон — специалист перезвонит и поможет подобрать решение.</p>
         <LeadFormClient {...formProps} variant="modal" />
-        <p className={styles.alternative}>Или позвоните: <a href={`tel:+${formProps.phone.replace(/\D/g, "")}`}>{formProps.phone}</a></p>
+        <p className={styles.alternative}>Или позвоните: <a href={`tel:+${formProps.phone.replace(/\D/g, "")}`} data-call-tracking-id="contact_modal">{formProps.phone}</a></p>
       </div>
     </dialog>
   );

@@ -51,8 +51,15 @@ export function getFeedbackEndpoint(apiBase: string | undefined) {
   }
 }
 
-export function createLeadPayload(values: LeadValues, regionName: string, consentVersion: string) {
+export type LeadContext = { page: string; formPosition: "inline" | "modal" };
+
+export function createLeadPayload(values: LeadValues, regionName: string, consentVersion: string, context: LeadContext) {
   if (Object.keys(validateLead(values)).length) throw new Error("Invalid lead");
+  // Только путь: query/hash могут содержать лишние данные и не нужны для заявки.
+  const page = context.page.split(/[?#]/, 1)[0];
+  if (!page.startsWith("/") || page.startsWith("//") || /[\\\s]/.test(page) || page.length > 1024) {
+    throw new Error("Invalid page");
+  }
   return {
     name: values.name.trim(),
     phone: `+${values.phone.replace(/\D/g, "")}`,
@@ -60,5 +67,7 @@ export function createLeadPayload(values: LeadValues, regionName: string, consen
     personalDataConsent: true,
     consentVersion,
     consentedAt: new Date().toISOString(),
+    page,
+    formPosition: context.formPosition,
   };
 }

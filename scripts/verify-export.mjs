@@ -7,6 +7,10 @@ import nextEnv from "@next/env";
 nextEnv.loadEnvConfig(fileURLToPath(new URL("../", import.meta.url)));
 const { SITE_URL, SITE_DOMAIN } = await import("../lib/site-url.mjs");
 
+const metrikaId = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID?.trim() ?? "";
+assert.ok(/^\d+$/.test(metrikaId) && Number.isSafeInteger(Number(metrikaId)) && Number(metrikaId) > 0,
+  "Set NEXT_PUBLIC_YANDEX_METRIKA_ID before building and verifying the export");
+
 const output = new URL("../out/", import.meta.url);
 
 async function exportedFile(path) {
@@ -31,6 +35,34 @@ function attributes(tag) {
     [...tag.matchAll(/([\w:-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')/g)]
       .map(([, name, doubleQuoted, singleQuoted]) => [name.toLowerCase(), decodeHtml(doubleQuoted ?? singleQuoted)]),
   );
+}
+
+function verifyPhoneLinks(html, page) {
+  const links = [...html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "").matchAll(/<a\b[^>]*>/gi)]
+    .map(([tag]) => attributes(tag)).filter((link) => link.href?.startsWith("tel:"));
+  assert.ok(links.length, `Telephone links are missing: ${page}`);
+  for (const link of links) {
+    assert.match(link["data-call-tracking-id"] ?? "", /^[a-z0-9_]+$/, `Telephone placement is missing: ${page}`);
+  }
+}
+
+function verifyResponsiveImages(html, page) {
+  const pictures = [...html.matchAll(/<picture>([\s\S]*?)<\/picture>/gi)].map(([, content]) => content);
+  const hero = pictures.find((picture) => picture.includes('/hero-'));
+  assert.ok(hero, `Responsive hero must be in static HTML: ${page}`);
+  const img = attributes(hero.match(/<img\b[^>]*>/i)?.[0] ?? "");
+  const source = attributes(hero.match(/<source\b[^>]*>/i)?.[0] ?? "");
+  assert.equal(img.loading, "eager", `Hero must not wait for scrolling: ${page}`);
+  assert.equal(img.fetchpriority, "high", `Hero priority is missing: ${page}`);
+  assert.equal(source.type, "image/avif", `AVIF source is missing: ${page}`);
+  assert.ok(img.srcset?.includes("/hero-768.webp"), `WebP fallback is missing: ${page}`);
+  assert.equal(source.sizes, img.sizes, `Image formats must use the same layout sizes: ${page}`);
+  const preloads = [...html.matchAll(/<link\b[^>]*>/gi)].map(([tag]) => attributes(tag))
+    .filter((link) => link.rel === "preload" && `${link.href ?? ""} ${link.imagesrcset ?? ""}`.includes("/hero-"));
+  assert.equal(preloads.length, 1, `Hero must preload only one format: ${page}`);
+  assert.equal(preloads[0].type, source.type);
+  assert.equal(preloads[0].imagesrcset, source.srcset);
+  assert.equal(preloads[0].imagesizes, source.sizes);
 }
 
 function exactlyOne(values, label, pageUrl) {
@@ -157,7 +189,9 @@ for (const url of urls) {
   assert.ok(html.includes("ОКНО ЩИТ"), `New brand is missing: ${url.href}`);
   assert.ok(!/Без Осколков|БЕЗ ОСКОЛКОВ|bezoskolkov\.ru/.test(html), `Old brand found: ${url.href}`);
   assert.ok(html.includes('href="/privacy/"') && html.includes('href="/personal-data-consent/"'), `Legal links missing: ${url.href}`);
-  assert.ok(!/<(?:script|img)[^>]+src="https?:\/\/(?:mc|mc\.webvisor)\.yandex\./.test(html), `Unconditional analytics request found: ${url.href}`);
+  verifyPhoneLinks(html, url.href);
+  assert.match(html, new RegExp(`<noscript>[\\s\\S]*?<img[^>]+src="https://mc\\.yandex\\.ru/watch/${Number(metrikaId)}"[\\s\\S]*?</noscript>`),
+    `Configured Metrika fallback pixel is missing: ${url.href}`);
 }
 
 for (const path of ["privacy/", "personal-data-consent/"]) {
@@ -168,6 +202,7 @@ for (const path of ["privacy/", "personal-data-consent/"]) {
 }
 
 const home = await exportedFile("index.html");
+verifyResponsiveImages(home, "/");
 assert.match(home, /<form[^>]*method="post"/, "Contact forms must never fall back to GET with personal data");
 assert.match(home, /<fieldset[^>]*disabled=""/, "Contact fields must stay disabled until JavaScript can submit them safely");
 for (const text of ["Один удар.", "Защитная плёнка", "Плёнку будет видно на окне?"]) {
@@ -175,6 +210,8 @@ for (const text of ["Один удар.", "Защитная плёнка", "Пл
 }
 
 const south = await exportedFile("regions/yug-rossii/index.html");
+verifyPhoneLinks(south, "/regions/yug-rossii/");
+verifyResponsiveImages(south, "/regions/yug-rossii/");
 const southMetadata = verifyPageMetadata(south, `${siteUrl}/`);
 assert.deepEqual(southMetadata, homeMetadata, "The South alias must share the homepage canonical and metadata");
 verifyStructuredData(south, `${siteUrl}/`, true);
@@ -184,6 +221,15 @@ assert.match(notFound, /<meta name="robots" content="noindex"/);
 
 for (const asset of ["hero-768.webp", "hero-1280.webp", "hero-1536.webp", "comparison-768.webp", "comparison-1280.webp", "comparison-1536.webp", "og-image.png"]) {
   assert.ok((await stat(new URL(asset, output))).size > 0, `Missing image: ${asset}`);
+}
+
+for (const name of ["hero", "comparison"]) {
+  for (const width of [480, 768, 1024, 1280, 1536]) {
+    for (const format of ["avif", "webp"]) {
+      const asset = `${name}-${width}.${format}`;
+      assert.ok((await stat(new URL(asset, output))).size > 0, `Missing responsive image: ${asset}`);
+    }
+  }
 }
 
 console.log(`Verified ${urls.length} canonical pages, unique SEO metadata, linked JSON-LD, the South alias, sitemap, robots.txt, and static images.`);

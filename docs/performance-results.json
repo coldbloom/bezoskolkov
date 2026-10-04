@@ -1,0 +1,334 @@
+{
+  "date": "2026-10-04",
+  "lighthouse": "13.5.0",
+  "chrome": "154.0.0.0",
+  "mode": "Mobile simulated throttling: 150ms RTT, 1638.4Kbps, CPU slowdown4x, 412x823 DPR1.75",
+  "externalServices": "Yandex Metrika/API requests blocked; no live leads or analytics events",
+  "scope": "Local production export. Not a measurement of the deployed website or real-user Core Web Vitals.",
+  "scenarios": [
+    {
+      "description": "Initial code; local server compresses HTML only (matching observed public MIME behavior)",
+      "runs": [
+        {
+          "run": 1,
+          "performance": 0.8,
+          "seo": 1,
+          "FCP": {
+            "value": 1385.5035,
+            "display": "1.4 s"
+          },
+          "LCP": {
+            "value": 5260.25525,
+            "display": "5.3 s"
+          },
+          "TBT": {
+            "value": 28.5,
+            "display": "30 ms"
+          },
+          "CLS": {
+            "value": 0,
+            "display": "0"
+          },
+          "speedIndex": {
+            "value": 1385.5035,
+            "display": "1.4 s"
+          },
+          "bytes": {
+            "value": 784675,
+            "display": "Total size was 766 KiB"
+          }
+        },
+        {
+          "run": 2,
+          "performance": 0.81,
+          "seo": 1,
+          "FCP": {
+            "value": 1354.1573,
+            "display": "1.4 s"
+          },
+          "LCP": {
+            "value": 5183.1966250000005,
+            "display": "5.2 s"
+          },
+          "TBT": {
+            "value": 14,
+            "display": "10 ms"
+          },
+          "CLS": {
+            "value": 0,
+            "display": "0"
+          },
+          "speedIndex": {
+            "value": 1354.1573,
+            "display": "1.4 s"
+          },
+          "bytes": {
+            "value": 784675,
+            "display": "Total size was 766 KiB"
+          }
+        },
+        {
+          "run": 3,
+          "performance": 0.81,
+          "seo": 1,
+          "FCP": {
+            "value": 1355.2559,
+            "display": "1.4 s"
+          },
+          "LCP": {
+            "value": 5183.569875,
+            "display": "5.2 s"
+          },
+          "TBT": {
+            "value": 13.5,
+            "display": "10 ms"
+          },
+          "CLS": {
+            "value": 0,
+            "display": "0"
+          },
+          "speedIndex": {
+            "value": 1355.2559,
+            "display": "1.4 s"
+          },
+          "bytes": {
+            "value": 784675,
+            "display": "Total size was 766 KiB"
+          }
+        }
+      ],
+      "median": {
+        "performance": 81,
+        "seo": 100,
+        "fcpMs": 1355.2559,
+        "lcpMs": 5183.569875,
+        "tbtMs": 14,
+        "cls": 0,
+        "transferredBytes": 784675
+      }
+    },
+    {
+      "description": "Initial code; local server compresses HTML, CSS, JavaScript and text assets",
+      "runs": [
+        {
+          "run": 1,
+          "performance": 0.61,
+          "seo": 1,
+          "FCP": {
+            "value": 1082.6987,
+            "display": "1.1 s"
+          },
+          "LCP": {
+            "value": 3687.2227249999996,
+            "display": "3.7 s"
+          },
+          "TBT": {
+            "value": 2265.15065,
+            "display": "2,270 ms"
+          },
+          "CLS": {
+            "value": 0,
+            "display": "0"
+          },
+          "speedIndex": {
+            "value": 2464.2895839994353,
+            "display": "2.5 s"
+          },
+          "bytes": {
+            "value": 395382,
+            "display": "Total size was 386 KiB"
+          }
+        },
+        {
+          "run": 2,
+          "performance": 0.95,
+          "seo": 1,
+          "FCP": {
+            "value": 1060.3021,
+            "display": "1.1 s"
+          },
+          "LCP": {
+            "value": 2943.4531500000003,
+            "display": "2.9 s"
+          },
+          "TBT": {
+            "value": 14,
+            "display": "10 ms"
+          },
+          "CLS": {
+            "value": 0,
+            "display": "0"
+          },
+          "speedIndex": {
+            "value": 1060.3021,
+            "display": "1.1 s"
+          },
+          "bytes": {
+            "value": 395382,
+            "display": "Total size was 386 KiB"
+          }
+        },
+        {
+          "run": 3,
+          "performance": 0.95,
+          "seo": 1,
+          "FCP": {
+            "value": 1057.1951,
+            "display": "1.1 s"
+          },
+          "LCP": {
+            "value": 2939.993875,
+            "display": "2.9 s"
+          },
+          "TBT": {
+            "value": 15.5,
+            "display": "20 ms"
+          },
+          "CLS": {
+            "value": 0,
+            "display": "0"
+          },
+          "speedIndex": {
+            "value": 1057.1951,
+            "display": "1.1 s"
+          },
+          "bytes": {
+            "value": 395382,
+            "display": "Total size was 386 KiB"
+          }
+        }
+      ],
+      "median": {
+        "performance": 95,
+        "seo": 100,
+        "fcpMs": 1060.3021,
+        "lcpMs": 2943.4531500000003,
+        "tbtMs": 15.5,
+        "cls": 0,
+        "transferredBytes": 395382
+      }
+    },
+    {
+      "description": "Optimized code; local server compresses HTML, CSS, JavaScript and text assets",
+      "runs": [
+        {
+          "run": 1,
+          "performance": 0.95,
+          "seo": 1,
+          "FCP": {
+            "value": 1055.3137,
+            "display": "1.1 s"
+          },
+          "LCP": {
+            "value": 2980.97055,
+            "display": "3.0 s"
+          },
+          "TBT": {
+            "value": 36.5,
+            "display": "40 ms"
+          },
+          "CLS": {
+            "value": 0,
+            "display": "0"
+          },
+          "speedIndex": {
+            "value": 1055.3137,
+            "display": "1.1 s"
+          },
+          "bytes": {
+            "value": 367647,
+            "display": "Total size was 359 KiB"
+          }
+        },
+        {
+          "run": 2,
+          "performance": 0.94,
+          "seo": 1,
+          "FCP": {
+            "value": 1058.7141,
+            "display": "1.1 s"
+          },
+          "LCP": {
+            "value": 3023.07115,
+            "display": "3.0 s"
+          },
+          "TBT": {
+            "value": 17.5,
+            "display": "20 ms"
+          },
+          "CLS": {
+            "value": 0,
+            "display": "0"
+          },
+          "speedIndex": {
+            "value": 1058.7141,
+            "display": "1.1 s"
+          },
+          "bytes": {
+            "value": 367647,
+            "display": "Total size was 359 KiB"
+          }
+        },
+        {
+          "run": 3,
+          "performance": 0.95,
+          "seo": 1,
+          "FCP": {
+            "value": 1056.2133,
+            "display": "1.1 s"
+          },
+          "LCP": {
+            "value": 2941.31995,
+            "display": "2.9 s"
+          },
+          "TBT": {
+            "value": 16,
+            "display": "20 ms"
+          },
+          "CLS": {
+            "value": 0,
+            "display": "0"
+          },
+          "speedIndex": {
+            "value": 1056.2133,
+            "display": "1.1 s"
+          },
+          "bytes": {
+            "value": 367647,
+            "display": "Total size was 359 KiB"
+          }
+        }
+      ],
+      "median": {
+        "performance": 95,
+        "seo": 100,
+        "fcpMs": 1056.2133,
+        "lcpMs": 2980.97055,
+        "tbtMs": 17.5,
+        "cls": 0,
+        "transferredBytes": 367647
+      }
+    }
+  ],
+  "browserQa": {
+    "viewports": [
+      320,
+      390,
+      900,
+      1440
+    ],
+    "horizontalOverflow": false,
+    "heroFormat": "AVIF",
+    "heroRequestsPerNavigation": 1,
+    "heroAspectRatio": "3:2",
+    "javascriptAndHydrationErrors": [],
+    "checks": [
+      "five diagram images and CodeCake",
+      "contact modal, Escape and focus restoration",
+      "mobile menu",
+      "company navigation and history back",
+      "direct regional page",
+      "visible content with JavaScript disabled"
+    ]
+  }
+}
