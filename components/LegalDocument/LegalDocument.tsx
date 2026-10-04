@@ -40,7 +40,7 @@ export function LegalDocument({ title, path, children }: { title: string; path: 
           </header>
           {!isLegalConfigured && (
             <p className={styles.notice}>
-              Сведения об операторе уточняются. Онлайн-заявки временно недоступны.
+              Сведения об операторе уточняются.
               Для связи используйте телефон <LegalContact />.
             </p>
           )}

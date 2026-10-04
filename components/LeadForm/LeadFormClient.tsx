@@ -9,7 +9,6 @@ import styles from "./LeadForm.module.scss";
 export type LeadFormClientProps = {
   regionName: string;
   phone: string;
-  legalConfigured: boolean;
   consentVersion: string;
   variant?: "inline" | "modal";
 };
@@ -20,7 +19,7 @@ const subscribeToHydration = () => () => {};
 const getClientSnapshot = () => true;
 const getServerSnapshot = () => false;
 
-export function LeadFormClient({ regionName, phone, legalConfigured, consentVersion, variant = "inline" }: LeadFormClientProps) {
+export function LeadFormClient({ regionName, phone, consentVersion, variant = "inline" }: LeadFormClientProps) {
   const id = useId();
   const hydrated = useSyncExternalStore(subscribeToHydration, getClientSnapshot, getServerSnapshot);
   const [values, setValues] = useState<LeadValues>(initialValues);
@@ -29,7 +28,7 @@ export function LeadFormClient({ regionName, phone, legalConfigured, consentVers
   const [submitError, setSubmitError] = useState("");
   const pendingRequest = useRef<AbortController | null>(null);
   const feedbackRef = useRef<HTMLDivElement>(null);
-  const available = legalConfigured && Boolean(feedbackEndpoint);
+  const available = Boolean(feedbackEndpoint);
   const telephone = `tel:+${phone.replace(/\D/g, "")}`;
 
   useEffect(() => () => {
@@ -57,7 +56,7 @@ export function LeadFormClient({ regionName, phone, legalConfigured, consentVers
       return;
     }
 
-    if (!available || !feedbackEndpoint) {
+    if (!feedbackEndpoint) {
       setSubmitError("Сейчас отправка заявки недоступна. Данные не отправлены. Пожалуйста, позвоните нам:");
       setStatus("error");
       return;

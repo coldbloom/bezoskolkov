@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { isLegalConfigured, LEGAL_VERSION } from "@/lib/legal";
+import { LEGAL_VERSION } from "@/lib/legal";
 import { formatPhone } from "@/lib/site";
 import { ContactModalButton } from "./ContactModalButton";
 
@@ -12,5 +12,5 @@ type ContactModalTriggerProps = {
 };
 
 export function ContactModalTrigger(props: ContactModalTriggerProps) {
-  return <ContactModalButton {...props} phone={formatPhone(props.phone)} legalConfigured={isLegalConfigured} consentVersion={LEGAL_VERSION} />;
+  return <ContactModalButton {...props} phone={formatPhone(props.phone)} consentVersion={LEGAL_VERSION} />;
 }
